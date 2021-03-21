@@ -315,7 +315,7 @@ namespace DQAsset
         public List<PropertyTag> PropertyTags;
         public List<ISerializable> Properties;
         public uint Reserved;
-        public Dictionary<FName, ISerializableText> PropertiesData;
+        public Dictionary<string, ISerializableText> PropertiesData;
 
         public string SerializeTextHeader(PackageFile package)
         {
@@ -332,7 +332,7 @@ namespace DQAsset
 
             foreach (var kvp in PropertiesData)
             {
-                retVal += kvp.Key.Value + ",";
+                retVal += kvp.Key + ",";
                 retVal += kvp.Value.SerializeText(package);
                 retVal += Environment.NewLine;
             }
@@ -373,7 +373,9 @@ namespace DQAsset
 
                 foreach (var kvp in PropertiesData)
                 {
-                    kvp.Key.Serialize(writer, package);
+                    var rowName = new FName();
+                    rowName.Value = kvp.Key;
+                    rowName.Serialize(writer, package);
 
                     var structSizePosition = writer.BaseStream.Position;
                     writer.Write((int)0);// dummy val, we'll fix it later
@@ -421,7 +423,7 @@ namespace DQAsset
             // ObjectProperty data comes after the properties/propertytags section
             // I don't know if any other properties are handled this way, probably not, doing this is likely wrong for 99% of other UE4 properties
 
-            PropertiesData = new Dictionary<FName, ISerializableText>();
+            PropertiesData = new Dictionary<string, ISerializableText>();
             foreach (var prop in Properties)
             {
                 if (prop.GetType() != typeof(ObjectProperty))
@@ -454,7 +456,7 @@ namespace DQAsset
                             reader.BaseStream.Position = position + structSize;
                         }
 
-                        PropertiesData.Add(rowName, propData);
+                        PropertiesData.Add(rowName.Value, propData);
                     }
                 }
             }

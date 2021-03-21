@@ -251,7 +251,7 @@ namespace DQAsset
         public bool                                               bUE4AchievementReload;                                    // 0x0051(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public bool                                               bDisabledInTrial;                                         // 0x0052(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         [Serializer(Size = 9)]
-        public byte[]                                      UnknownData03;    // maybe contains FName?                                   // 0x0053(0x0005) MISSED OFFSET
+        public byte[]                                      UnknownData03;    // sometimes contains something at [1], maybe FName?   // 0x0053(0x0005) MISSED OFFSET
     }
 
     public class JackDataTableCharacterLODBounds : FTableRowBase

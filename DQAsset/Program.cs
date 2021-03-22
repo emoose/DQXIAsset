@@ -31,30 +31,66 @@ namespace DQAsset
 
         static void Main(string[] args)
         {
-            var package = ReadPackage(@"C:\Games\JackGame\Content\DataTables\MiniGame\MeosiSlot\Monster\DT_MeosiSlotMonsterParam.uasset");
+            if(args.Length < 1)
+            {
+                Console.WriteLine("Usage: DQAsset.exe <path/to/uasset/or/csv>");
+                Console.WriteLine("Will convert UAsset/UExp pair to CSV, or CSV to UAsset/UExp pair");
+                Console.WriteLine();
+                Console.WriteLine("Note that CSV should have the original UAsset/UExp files next to it, for DQAsset to use as a base to update");
+                Console.WriteLine("Updated UAsset/UExp pair will be written to <path>_mod.uasset/uexp");
+                Console.WriteLine();
+                Console.WriteLine("(currently rows can't be removed but should be possible to add new ones - same for any FNames)");
+                return;
+            }
 
-            //var exp = package.ExportObjects[0].PropertiesData["Slime"] as JackDataTableMeosiSlotMonsterParam;
-            //exp.Attack1_Damage = exp.Attack2_Damage = exp.Attack3_Damage = exp.Attack4_Damage = 1;
+            var inputFile = args[0];
+            var inputUAsset = inputFile;
+            var outputFile = Path.ChangeExtension(inputFile, ".csv");
 
-            // Test writing out CSV
-            var csvData = package.SerializeText();
-            File.WriteAllText(@"C:\Games\DT_Custom\Test7.csv", csvData);
+            bool convertingToText = true;
 
-            // TODO: can't use this atm until hidden fields have default values set up
-            // (see FTableRowBase::DeserializeText)
-            // If hidden fields are removed from struct it seems to work fine though!
-            // package.ExportObjects[0].PropertiesData.Clear();
+            var inputExtension = Path.GetExtension(inputFile);
+            if (inputExtension == ".csv")
+            {
+                outputFile = Path.Combine(Path.GetDirectoryName(inputFile), Path.GetFileNameWithoutExtension(inputFile) + "_mod");
+                convertingToText = false;
+                inputUAsset = Path.ChangeExtension(inputFile, ".uasset");
+            }
+            if(!File.Exists(inputUAsset))
+            {
+                Console.WriteLine("failed to load base uasset from path");
+                Console.WriteLine($"  {inputUAsset}");
+                return;
+            }
 
+            var package = ReadPackage(inputUAsset);
+            if(convertingToText)
+            {
+                File.WriteAllText(outputFile, package.SerializeText());
+                Console.WriteLine("wrote out CSV to path");
+                Console.WriteLine($"  {outputFile}");
+                return;
+            }
+
+            // Not converting to text, must be converting from text
+            if(!File.Exists(inputFile))
+            {
+                Console.WriteLine("failed to load csv data from path");
+                Console.WriteLine($"  {inputFile}");
+                return;
+            }
+            var csvData = File.ReadAllText(inputFile);
             package.DeserializeText(csvData);
 
-            // TODO: read in modified CSV
+            var outputUAsset = outputFile + ".uasset";
+            var outputUexp = outputFile + ".uexp";
 
-            // Test writing parsed/modded UAsset to UAsset+UExp pair
-            using (var outputUAsset = new BinaryWriter(File.Create(@"C:\Games\DT_Custom\Test7.uasset")))
-            using (var outputUexp = new BinaryWriter(File.Create(@"C:\Games\DT_Custom\Test7.uexp")))
-                package.Serialize(outputUexp, outputUAsset);
+            using (var outputUAssetWriter = new BinaryWriter(File.Create(outputUAsset)))
+            using (var outputUexpWriter = new BinaryWriter(File.Create(outputUexp)))
+                package.Serialize(outputUexpWriter, outputUAssetWriter);
 
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("wrote out uasset/uexp files to path");
+            Console.WriteLine($"  {outputFile}.uasset/uexp");
         }
     }
 }

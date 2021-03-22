@@ -79,6 +79,13 @@ namespace DQAsset
                 Console.WriteLine($"  {inputFile}");
                 return;
             }
+
+            // Clear existing rows from loaded UAsset, so only ones defined in CSV will still exist
+            // TODO: this shouldn't be used if any fields are marked with Serializer(Hidden=true), since atm we don't construct default object for them :(
+            // If any structs are added which use that, comment this line to fix the serializer afterward...
+            // (or alternatively, fix the serializer code properly so it constructs a default object ^^)
+            package.ExportObjects[0].PropertiesData.Clear();
+
             var csvData = File.ReadAllText(inputFile);
             package.DeserializeText(csvData);
 

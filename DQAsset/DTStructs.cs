@@ -261,8 +261,7 @@ namespace DQAsset
         EJackCharacterEffectSize__S    = 1,
         EJackCharacterEffectSize__M    = 2,
         EJackCharacterEffectSize__L    = 3,
-        EJackCharacterEffectSize__LL   = 4,
-        EJackCharacterEffectSize__MAX  = 5
+        EJackCharacterEffectSize__LL   = 4
     };
 
     public enum EJackMonsterMoveSpeed : byte
@@ -276,8 +275,7 @@ namespace DQAsset
         EJackMonsterMoveSpeed__Fast    = 6,
         EJackMonsterMoveSpeed__VeryFast = 7,
         EJackMonsterMoveSpeed__SuperFast = 8,
-        EJackMonsterMoveSpeed__Original = 9,
-        EJackMonsterMoveSpeed__MAX     = 10
+        EJackMonsterMoveSpeed__Original = 9
     };
 
     public enum EJackMonsterBodyAttribute : byte
@@ -286,8 +284,7 @@ namespace DQAsset
         EJackMonsterBodyAttribute__Body = 1,
         EJackMonsterBodyAttribute__Parts = 2,
         EJackMonsterBodyAttribute__NoEntityParts = 3,
-        EJackMonsterBodyAttribute__ShadowCopy = 4,
-        EJackMonsterBodyAttribute__MAX = 5
+        EJackMonsterBodyAttribute__ShadowCopy = 4
     };
 
     public enum EJackMatineeRenkeiMonsterSize : byte
@@ -306,8 +303,7 @@ namespace DQAsset
         EJackMatineeRenkeiMonsterSize__SP09 = 11,
         EJackMatineeRenkeiMonsterSize__SP10 = 12,
         EJackMatineeRenkeiMonsterSize__SP11 = 13,
-        EJackMatineeRenkeiMonsterSize__SP12 = 14,
-        EJackMatineeRenkeiMonsterSize__MAX = 15
+        EJackMatineeRenkeiMonsterSize__SP12 = 14
     };
 
     public class JackDataTableMonsterPhysicalProperty : FTableRowBase
@@ -379,5 +375,15 @@ namespace DQAsset
         public float                                              ScoreRectYellowW;                                         // 0x0120(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public float                                              ScoreRectYellowH;                                         // 0x0124(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public float                                              ScoreRectYellowOffsetZ;                                   // 0x0128(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+    }
+
+    // DT_GameParameter doesn't contain any structSize field before the struct itself, wtf?
+    [Serializer(NoStructSize = true)]
+    public class JackDataTableParameter : FTableRowBase
+    {
+	    public float                                              X;                                                        // 0x0008(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float Y;                                                        // 0x000C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float Z;                                                        // 0x0010(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	    public FName                                       Text;                                                     // 0x0018(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
     }
 }

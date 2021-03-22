@@ -411,17 +411,30 @@ namespace DQAsset
                     rowName.Value = kvp.Key;
                     rowName.Serialize(writer, package);
 
-                    var structSizePosition = writer.BaseStream.Position;
-                    writer.Write((int)0);// dummy val, we'll fix it later
+                    bool writeStructSize = true;
+                    var settings = kvp.Value.GetType().GetCustomAttribute<SerializerAttribute>();
+                    if (settings != null && settings.NoStructSize)
+                        writeStructSize = false;
+
+                    long structSizePosition = 0;
+
+                    if (writeStructSize)
+                    {
+                        structSizePosition = writer.BaseStream.Position;
+                        writer.Write((int)0);// dummy val, we'll fix it later
+                    }
 
                     var structStartPosition = writer.BaseStream.Position;
                     kvp.Value.Serialize(writer, package);
                     var structEndPosition = writer.BaseStream.Position;
 
-                    var structSize = structEndPosition - structStartPosition;
-                    writer.BaseStream.Position = structSizePosition;
-                    writer.Write((uint)structSize);
-                    writer.BaseStream.Position = structEndPosition;
+                    if (writeStructSize)
+                    {
+                        var structSize = structEndPosition - structStartPosition;
+                        writer.BaseStream.Position = structSizePosition;
+                        writer.Write((uint)structSize);
+                        writer.BaseStream.Position = structEndPosition;
+                    }
                 }
             }
         }
@@ -475,16 +488,20 @@ namespace DQAsset
                 {
                     var rowName = new FName();
                     rowName.Deserialize(reader, package);
-                    int structSize = reader.ReadInt32();
 
                     var position = reader.BaseStream.Position;
                     if (propertyType.BaseType.GetInterfaces().Contains(typeof(ISerializableText)))
                     {
+                        int structSize = 0;
+                        var settings = propertyType.GetCustomAttribute<SerializerAttribute>();
+                        if(settings == null || !settings.NoStructSize)
+                            structSize = reader.ReadInt32();
+
                         var propData = Activator.CreateInstance(propertyType) as ISerializableText;
                         propData.Deserialize(reader, package);
 
                         var length = reader.BaseStream.Position - position;
-                        if (length != structSize)
+                        if (structSize != 0 && length != structSize)
                         {
                             throw new Exception($"DataTable read incorrect number of bytes (read {length}, expected {structSize}!)");
                             reader.BaseStream.Position = position + structSize;

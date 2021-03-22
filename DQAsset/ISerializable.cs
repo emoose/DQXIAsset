@@ -22,7 +22,13 @@ namespace DQAsset
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.GenericParameter | AttributeTargets.Class)]
     public class SerializerAttribute : Attribute
     {
+        // Struct size isn't contained in the uexp data, maybe there's a flag in uasset somewhere that defines this?
+        public bool NoStructSize { get; set; }
+
+        // Number of bytes/array elements
         public int Size { get; set; }
+
+        // Won't be written into/read from CSV file, eg. for padding bytes, if used make sure to remove PropertiesData.Clear() line from Program.cs!
         public bool Hidden { get; set; }
     }
 }

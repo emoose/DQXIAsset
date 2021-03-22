@@ -197,7 +197,7 @@ namespace DQAsset
                     break;
                 case "Boolean":
                     var val = (bool)value;
-                    writer.Write(val ? (byte)1 : (byte)0);
+                    writer.Write(val ? 1 : 0);
                     break;
                 case "Byte":
                     writer.Write((byte)value);
@@ -256,7 +256,7 @@ namespace DQAsset
                     byte[] data = reader.ReadBytes(sz);
                     return data;
                 case "Boolean":
-                    return reader.ReadByte() != 0;
+                    return reader.ReadInt32() != 0;
                 case "Byte":
                     return reader.ReadByte();
                 case "Int16":

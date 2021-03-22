@@ -115,12 +115,9 @@ namespace DQAsset
         EJackMeosiSlotMonsterID__IdMetalKing = 36,
     }
 
-    // Mostly seems correct, though BaseHp/HpRange only ever seem to be 0/1, and bPhysicalResistance/bMagicalResistance aren't ever set?
     class JackDataTableMeosiSlotMonsterParam : FTableRowBase
     {
         public string NameText;                                                 // 0x0008(0x0010) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance)
-        [Serializer(Size = 3, Hidden = true)]
-        public byte[] Pad;
         public bool RareFlag;                                                 // 0x0018(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public EJackMeosiSlotMonsterBehaviorPattern Pattern;                                                  // 0x0019(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public int Attack1_Damage;                                           // 0x001C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
@@ -145,8 +142,6 @@ namespace DQAsset
         public int HpRange;                                                  // 0x0074(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public bool bPhysicalResistance;                                      // 0x0078(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public bool bMagicalResistance;                                       // 0x0079(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-        [Serializer(Size = 0x6)]
-        public byte[] UnknownData07;  // note: contains a bunch of unknown data..                                     // 0x0081(0x0007) MISSED OFFSET
         public EJackMeosiSlotMonsterRank Rank;                                                     // 0x007A(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public int LvUp;                                                     // 0x007C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public EJackMeosiSlotMonsterSize Size;                                                     // 0x0080(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
@@ -250,8 +245,6 @@ namespace DQAsset
         public bool                                               bUE4AchievementOnly;                                      // 0x0050(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public bool                                               bUE4AchievementReload;                                    // 0x0051(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public bool                                               bDisabledInTrial;                                         // 0x0052(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-        [Serializer(Size = 9)]
-        public byte[]                                      UnknownData03;    // sometimes contains something at [1], maybe FName?   // 0x0053(0x0005) MISSED OFFSET
     }
 
     public class JackDataTableCharacterLODBounds : FTableRowBase
@@ -261,4 +254,130 @@ namespace DQAsset
         public float                                       Radius;                                                   // 0x001C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public float                                       CastShadowCullingBoundsScale;                             // 0x0020(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
     };
+
+    public enum EJackCharacterEffectSize : byte
+    {
+        EJackCharacterEffectSize__Human = 0,
+        EJackCharacterEffectSize__S    = 1,
+        EJackCharacterEffectSize__M    = 2,
+        EJackCharacterEffectSize__L    = 3,
+        EJackCharacterEffectSize__LL   = 4,
+        EJackCharacterEffectSize__MAX  = 5
+    };
+
+    public enum EJackMonsterMoveSpeed : byte
+    {
+        EJackMonsterMoveSpeed__SuperSlow = 0,
+        EJackMonsterMoveSpeed__VerySlow = 1,
+        EJackMonsterMoveSpeed__Slow    = 2,
+        EJackMonsterMoveSpeed__SlightlySlow = 3,
+        EJackMonsterMoveSpeed__Normal  = 4,
+        EJackMonsterMoveSpeed__SlightlyFast = 5,
+        EJackMonsterMoveSpeed__Fast    = 6,
+        EJackMonsterMoveSpeed__VeryFast = 7,
+        EJackMonsterMoveSpeed__SuperFast = 8,
+        EJackMonsterMoveSpeed__Original = 9,
+        EJackMonsterMoveSpeed__MAX     = 10
+    };
+
+    public enum EJackMonsterBodyAttribute : byte
+    {
+        EJackMonsterBodyAttribute__Monolithic = 0,
+        EJackMonsterBodyAttribute__Body = 1,
+        EJackMonsterBodyAttribute__Parts = 2,
+        EJackMonsterBodyAttribute__NoEntityParts = 3,
+        EJackMonsterBodyAttribute__ShadowCopy = 4,
+        EJackMonsterBodyAttribute__MAX = 5
+    };
+
+    public enum EJackMatineeRenkeiMonsterSize : byte
+    {
+        EJackMatineeRenkeiMonsterSize__S = 0,
+        EJackMatineeRenkeiMonsterSize__M = 1,
+        EJackMatineeRenkeiMonsterSize__L = 2,
+        EJackMatineeRenkeiMonsterSize__SP01 = 3,
+        EJackMatineeRenkeiMonsterSize__SP02 = 4,
+        EJackMatineeRenkeiMonsterSize__SP03 = 5,
+        EJackMatineeRenkeiMonsterSize__SP04 = 6,
+        EJackMatineeRenkeiMonsterSize__SP05 = 7,
+        EJackMatineeRenkeiMonsterSize__SP06 = 8,
+        EJackMatineeRenkeiMonsterSize__SP07 = 9,
+        EJackMatineeRenkeiMonsterSize__SP08 = 10,
+        EJackMatineeRenkeiMonsterSize__SP09 = 11,
+        EJackMatineeRenkeiMonsterSize__SP10 = 12,
+        EJackMatineeRenkeiMonsterSize__SP11 = 13,
+        EJackMatineeRenkeiMonsterSize__SP12 = 14,
+        EJackMatineeRenkeiMonsterSize__MAX = 15
+    };
+
+    public class JackDataTableMonsterPhysicalProperty : FTableRowBase
+    {
+        public float                                              ScaleX;                                                   // 0x0008(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ScaleY;                                                   // 0x000C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ScaleZ;                                                   // 0x0010(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public EJackCharacterEffectSize                           CharacterEffectSize;                                      // 0x0014(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public EJackCharacterEffectSize                           CharacterEffectSizeByActionCast;                          // 0x0015(0x0001) (Edit, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public EJackCharacterEffectSize                           CharacterEffectSizeByActionEffect;                        // 0x0016(0x0001) (Edit, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       LODBoundsID;                                              // 0x0018(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                LODLimitInBattle;                                         // 0x0020(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       FacialPresetID;                                           // 0x0028(0x0008) (Edit, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       VoicePresetID;                                            // 0x0030(0x0008) (Edit, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bBlockCamera;                                             // 0x0038(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bVariantForm;                                             // 0x0039(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                ProductionCost;                                           // 0x003C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              BasicSpeed;                                               // 0x0040(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public EJackMonsterMoveSpeed                 RunSpeed;                                                 // 0x0044(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              BackBasicSpeed;                                           // 0x0048(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public EJackMonsterMoveSpeed                 BackRunSpeed;                                             // 0x004C(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              AcceptanceRadius;                                         // 0x0050(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bIgnoreTakePosition;                                      // 0x0054(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bIgnoreTurnWhenLookAt;                                    // 0x0055(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bIgnoreDamageDirection;                                   // 0x0056(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bIgnoreActionDirection;                                   // 0x0057(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bUseBackWalk;                                             // 0x0058(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              BackWalkAngleThreshold;                                   // 0x005C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              BackWalkDistanceThreshold;                                // 0x0060(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              GroupRadius;                                              // 0x0064(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              DamageS_BlendRate;                                        // 0x0068(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              DamageS_BlendRate2;                                       // 0x006C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              IdleToRunDuration;                                        // 0x0070(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              RunningTurnRate;                                          // 0x0074(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              EscapeTurnSpeedMultiplier;                                // 0x0078(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       Motion_EncountByNakamaYobi;                               // 0x0080(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bAlwaysNavWalking;                                        // 0x0088(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              NavWalkingDistance;                                       // 0x008C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              FootIKDisableDistance;                                    // 0x0090(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              AttitudeDisableDistance;                                  // 0x0094(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              AnimDynamicsDisableDistance;                              // 0x0098(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              AlwaysUpdatePoseAndRefreshBoneDistance;                   // 0x009C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bLeaveMeshWhenDead;                                       // 0x00A0(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bLeaveCollisionWhenDead;                                  // 0x00A1(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              AppealStartTimeMin;                                       // 0x00A4(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              AppealStartTimeMax;                                       // 0x00A8(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public EJackMonsterBodyAttribute             BodyAttribute;                                            // 0x00AC(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       BodyMonsterId;                                            // 0x00B0(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              OffsetLengthOf3dWidget;                                   // 0x00B8(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bIgnoreAlphabetOrder;                                     // 0x00BC(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ActionCameraLengthAdjust;                                 // 0x00C0(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bRelativePosition;                                        // 0x00C4(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public EJackMatineeRenkeiMonsterSize         MatineeRenkeiMonsterSize;                                 // 0x00C5(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              KnockBackSmallRate;                                       // 0x00C8(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              KnockBackNormalRate;                                      // 0x00CC(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       ScoreRectRedSocket;                                       // 0x00D0(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ScoreRectRedW;                                            // 0x00D8(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ScoreRectRedH;                                            // 0x00DC(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ScoreRectRedOffsetZ;                                      // 0x00E0(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       ScoreRectBlueSocket;                                      // 0x00E8(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ScoreRectBlueW;                                           // 0x00F0(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ScoreRectBlueH;                                           // 0x00F4(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ScoreRectBlueOffsetZ;                                     // 0x00F8(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       ScoreRectGreenSocket;                                     // 0x0100(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ScoreRectGreenW;                                          // 0x0108(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ScoreRectGreenH;                                          // 0x010C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ScoreRectGreenOffsetZ;                                    // 0x0110(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       ScoreRectYellowSocket;                                    // 0x0118(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ScoreRectYellowW;                                         // 0x0120(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ScoreRectYellowH;                                         // 0x0124(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ScoreRectYellowOffsetZ;                                   // 0x0128(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+    }
 }

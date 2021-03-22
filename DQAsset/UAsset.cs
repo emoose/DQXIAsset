@@ -342,6 +342,40 @@ namespace DQAsset
 
         public void DeserializeText(string text, PackageFile package)
         {
+            Type? rowType = null;
+            foreach (var prop in Properties)
+            {
+                if (prop.GetType() != typeof(ObjectProperty))
+                    continue;
+
+                var objectProperty = prop as ObjectProperty;
+                if(!PackageFile.KnownTypes.TryGetValue(objectProperty.Value.ImportObject.ObjectName.Value, out rowType))
+                    throw new Exception($"UAsset uses unknown struct type {objectProperty.Value.ImportObject.ObjectName.Value}!");
+
+                break; // probably shouldn't be doing this, hopefully all DQXI tables only contain a single ObjectProperty...
+            }
+
+            if (rowType == null)
+                throw new Exception("Failed to find rowType type!");
+
+            var lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            foreach(var line in lines)
+            {
+                // Read + remove RowName from the line
+                var rowNameEndIdx = line.IndexOf(',');
+                var key = line.Substring(0, rowNameEndIdx);
+                var value = line.Substring(rowNameEndIdx + 1);
+
+                ISerializableText rowValue;
+                if (PropertiesData.ContainsKey(key))
+                    rowValue = PropertiesData[key];
+                else
+                    rowValue = Activator.CreateInstance(rowType) as ISerializableText;
+
+                rowValue.DeserializeText(value, package);
+
+                PropertiesData[key] = rowValue;
+            }
             // TODO load values from text into class
         }
 
@@ -702,10 +736,33 @@ namespace DQAsset
             return retVal;
         }
 
+        public void DeserializeText(string text)
+        {
+            var lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var exp in ExportObjects)
+            {
+                // Remove any TextHeader lines from the input text
+                var textHeader = exp.SerializeTextHeader(this);
+                var newText = "";
+                bool skipFirstLine = true;
+                foreach(var line in lines)
+                {
+                    if (line == textHeader || skipFirstLine)
+                    {
+                        skipFirstLine = false;
+                        continue; // skip csv header
+                    }
+                    newText += line + Environment.NewLine;
+                }
+                exp.DeserializeText(newText, this);
+            }
+        }
+
         public void Serialize(BinaryWriter uexp, BinaryWriter uasset)
         {
-            // We don't add Names in the same order as UE itself yet, so this will cause the whole names section to get rewritten
-            // (gives us a simple way to remove any unused names tho...)
+            // Clearing Names would force all FNames to readd themselves, easy way to remove any unused names from the array
+            // We don't add Names in the same order as UE itself yet tho, so this causes the whole names section to get shuffled around from the original
+            // Maybe could be added as an optional parameter or something?
             // Names.Clear();
 
             // Write out export data first

@@ -33,16 +33,26 @@ namespace DQAsset
         {
             var package = ReadPackage(@"C:\Games\JackGame\Content\DataTables\MiniGame\MeosiSlot\Monster\DT_MeosiSlotMonsterParam.uasset");
 
+            //var exp = package.ExportObjects[0].PropertiesData["Slime"] as JackDataTableMeosiSlotMonsterParam;
+            //exp.Attack1_Damage = exp.Attack2_Damage = exp.Attack3_Damage = exp.Attack4_Damage = 1;
+
             // Test writing out CSV
             var csvData = package.SerializeText();
-            File.WriteAllText(@"C:\Games\DT_Custom\Test3.csv", csvData);
+            File.WriteAllText(@"C:\Games\DT_Custom\Test7.csv", csvData);
+
+            // TODO: can't use this atm until hidden fields have default values set up
+            // (see FTableRowBase::DeserializeText)
+            // If hidden fields are removed from struct it seems to work fine though!
+            // package.ExportObjects[0].PropertiesData.Clear();
+
+            package.DeserializeText(csvData);
 
             // TODO: read in modified CSV
 
             // Test writing parsed/modded UAsset to UAsset+UExp pair
-            var outputUAsset = new BinaryWriter(File.Create(@"C:\Games\DT_Custom\Test3.uasset"));
-            var outputUexp = new BinaryWriter(File.Create(@"C:\Games\DT_Custom\Test3.uexp"));
-            package.Serialize(outputUexp, outputUAsset);
+            using (var outputUAsset = new BinaryWriter(File.Create(@"C:\Games\DT_Custom\Test7.uasset")))
+            using (var outputUexp = new BinaryWriter(File.Create(@"C:\Games\DT_Custom\Test7.uexp")))
+                package.Serialize(outputUexp, outputUAsset);
 
             Console.WriteLine("Hello World!");
         }

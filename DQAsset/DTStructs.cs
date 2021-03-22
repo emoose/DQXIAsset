@@ -114,6 +114,8 @@ namespace DQAsset
         EJackMeosiSlotMonsterID__IdQueenSlime = 35,
         EJackMeosiSlotMonsterID__IdMetalKing = 36,
     }
+
+    // Mostly seems correct, though BaseHp/HpRange only ever seem to be 0/1, and bPhysicalResistance/bMagicalResistance aren't ever set?
     class JackDataTableMeosiSlotMonsterParam : FTableRowBase
     {
         public string NameText;                                                 // 0x0008(0x0010) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance)
@@ -143,13 +145,11 @@ namespace DQAsset
         public int HpRange;                                                  // 0x0074(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public bool bPhysicalResistance;                                      // 0x0078(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public bool bMagicalResistance;                                       // 0x0079(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        [Serializer(Size = 0x6)]
+        public byte[] UnknownData07;  // note: contains a bunch of unknown data..                                     // 0x0081(0x0007) MISSED OFFSET
         public EJackMeosiSlotMonsterRank Rank;                                                     // 0x007A(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-        [Serializer(Size = 1)]
-        public byte[] UnknownData06;                                       // 0x007B(0x0001) MISSED OFFSET
         public int LvUp;                                                     // 0x007C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public EJackMeosiSlotMonsterSize Size;                                                     // 0x0080(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-        [Serializer(Size = 0x5, Hidden = true)]
-        public byte[] UnknownData07;  // note: contains 1 unknown byte?                                     // 0x0081(0x0007) MISSED OFFSET
         public FName PartyTexture;
         public FName EnemyTexture;
         public FName IconTexture;

@@ -192,6 +192,10 @@ namespace DQAsset
                         valueText = "\"" + valueText.Substring(2, valueText.Length - 4) + "\"";
                 }
 
+                // hack to escape anything that contains a comma, hope it doesn't break anything..
+                if (valueText.Contains(",") && !valueText.Contains("\""))
+                    valueText = "\"" + valueText + "\"";
+
                 retVal += valueText;
                 retVal += ",";
             }
@@ -447,6 +451,26 @@ namespace DQAsset
             {
                 if(field.Name == fieldName)
                 {
+                    if(field.FieldType == typeof(FName))
+                    {
+                        var name = field.GetValue(this) as FName;
+                        return name.Value != "None";
+                    }
+                    if (field.FieldType == typeof(byte))
+                        return (byte)field.GetValue(this) == 1;
+                    if (field.FieldType == typeof(short))
+                        return (short)field.GetValue(this) == 1;
+                    if (field.FieldType == typeof(int))
+                        return (int)field.GetValue(this) == 1;
+                    if (field.FieldType == typeof(long))
+                        return (long)field.GetValue(this) == 1;
+                    if (field.FieldType == typeof(ushort))
+                        return (ushort)field.GetValue(this) == 1;
+                    if (field.FieldType == typeof(uint))
+                        return (uint)field.GetValue(this) == 1;
+                    if (field.FieldType == typeof(ulong))
+                        return (ulong)field.GetValue(this) == 1;
+
                     return (bool)field.GetValue(this);
                 }
             }

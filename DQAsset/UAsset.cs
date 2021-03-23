@@ -93,6 +93,8 @@ namespace DQAsset
 
             if (package.Names.Count > Index && Index >= 0)
                 Value = package.Names[Index].Name;
+            else
+                throw new Exception("Deserialized FName not found in UAsset header?");
         }
 
         public void Serialize(BinaryWriter writer, PackageFile package)

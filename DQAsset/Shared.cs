@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace DQAsset
 {
@@ -317,5 +319,21 @@ namespace DQAsset
 			//Or the two combined, but a bit slower:
 			return val - (val < 58 ? 48 : (val < 97 ? 55 : 87));
 		}
+
+		readonly static Regex csvParser = new Regex("(?:^|,)(\\\"(?:[^\\\"]+|\\\"\\\")*\\\"|[^,]*)", RegexOptions.Compiled);
+
+		//given a row from the csv file, loop through returning an array of column values
+		public static IEnumerable<string> ProcessCsvRow(string row)
+		{
+			MatchCollection results = csvParser.Matches(row);
+			foreach (Match match in results)
+			{
+				foreach (Capture capture in match.Captures)
+				{
+					yield return (capture.Value ?? string.Empty).TrimStart(',').Trim('"', ' ');
+				}
+			}
+		}
+
 	}
 }

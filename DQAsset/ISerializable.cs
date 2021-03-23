@@ -15,7 +15,7 @@ namespace DQAsset
     public interface ISerializableText : ISerializable
     {
         void DeserializeText(string text, PackageFile package);
-        string SerializeText(PackageFile package);
+        string SerializeText(PackageFile package, bool isMainElement);
         string SerializeTextHeader(PackageFile package);
     }
 

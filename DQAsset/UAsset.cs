@@ -324,7 +324,7 @@ namespace DQAsset
 
             return "RowName," + PropertiesData.First().Value.SerializeTextHeader(package);
         }
-        public string SerializeText(PackageFile package)
+        public string SerializeText(PackageFile package, bool isMainElement)
         {
             var retVal = "";
 
@@ -333,7 +333,7 @@ namespace DQAsset
             foreach (var kvp in PropertiesData)
             {
                 retVal += kvp.Key + ",";
-                retVal += kvp.Value.SerializeText(package);
+                retVal += kvp.Value.SerializeText(package, isMainElement);
                 retVal += Environment.NewLine;
             }
 
@@ -751,7 +751,7 @@ namespace DQAsset
             {
                 retVal += exp.SerializeTextHeader(this);
                 retVal += Environment.NewLine;
-                retVal += exp.SerializeText(this);
+                retVal += exp.SerializeText(this, true);
             }
             return retVal;
         }

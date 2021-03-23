@@ -52,14 +52,16 @@ namespace DQAsset
                     var listType = typeof(List<>).MakeGenericType(elementType);
                     var list = Activator.CreateInstance(listType) as IList;
 
-                    if(value.StartsWith('{') && value.EndsWith('}'))
-                        value = value.Substring(1, value.Length - 2);
+                    if (value != "{}") // not empty:
+                    {
+                        if (value.StartsWith('{') && value.EndsWith('}'))
+                            value = value.Substring(1, value.Length - 2);
 
-                    var values = Shared.ProcessCsvRow(value).ToList();
+                        var values = Shared.ProcessCsvRow(value).ToList();
 
-                    foreach (var val in values)
-                        list.Add(DeserializeValueText(elementType, settings, package, val));
-
+                        foreach (var val in values)
+                            list.Add(DeserializeValueText(elementType, settings, package, val));
+                    }
                     
                     return list;
                 case "FName":
@@ -149,6 +151,8 @@ namespace DQAsset
                     if (type.GetInterfaces().Contains(typeof(ISerializableText)))
                     {
                         var obj = value as ISerializableText;
+                        if (obj == null)
+                            return "\"\"";
                         return "\"" + obj.SerializeText(package, false).Replace("\"", "\"\"") + "\"";
                     }
                     break;
@@ -157,7 +161,7 @@ namespace DQAsset
             return null;
         }
 
-        public string SerializeText(PackageFile package, bool isMainElement)
+        public virtual string SerializeText(PackageFile package, bool isMainElement)
         {
             var fields = GetType().GetFields().OrderBy(field => field.MetadataToken); // hack to get fields in order of declaration (todo: use something less hacky, this might break mono?)
             string retVal = "";
@@ -167,12 +171,26 @@ namespace DQAsset
                 if (settings != null && settings.Hidden)
                     continue;
 
+                bool shouldSerialize = true;
+
+                if (settings != null && !string.IsNullOrEmpty(settings.OnlyIfSet))
+                    if (!CheckIsSet(settings.OnlyIfSet))
+                        shouldSerialize = false;
+
+                if (settings != null && !string.IsNullOrEmpty(settings.OnlyIfNotSet))
+                    if (CheckIsSet(settings.OnlyIfNotSet))
+                        shouldSerialize = false;
+
                 var fieldType = field.FieldType.Name;
 
                 // change outer escaped-quotes to regular quotes
-                var valueText = SerializeValueText(field.FieldType, settings, package, field.GetValue(this));
-                if(isMainElement && valueText.StartsWith("\"\"") && valueText.EndsWith("\"\""))
-                    valueText = "\"" + valueText.Substring(2, valueText.Length - 4) + "\"";
+                string valueText = "\"\"";
+                if (shouldSerialize)
+                {
+                    valueText = SerializeValueText(field.FieldType, settings, package, field.GetValue(this));
+                    if (isMainElement && valueText.StartsWith("\"\"") && valueText.EndsWith("\"\"") && valueText.Length > 4)
+                        valueText = "\"" + valueText.Substring(2, valueText.Length - 4) + "\"";
+                }
 
                 retVal += valueText;
                 retVal += ",";
@@ -183,7 +201,7 @@ namespace DQAsset
             return retVal;
         }
 
-        public void DeserializeText(string text, PackageFile package)
+        public virtual void DeserializeText(string text, PackageFile package)
         {
             var values = Shared.ProcessCsvRow(text).ToList();
             var fields = GetType().GetFields().OrderBy(field => field.MetadataToken).ToList(); // hack to get fields in order of declaration (todo: use something less hacky, this might break mono?)
@@ -198,8 +216,20 @@ namespace DQAsset
                 if (settings != null && settings.Hidden) 
                     continue;
 
-                object value = DeserializeValueText(field.FieldType, settings, package, values[valueIdx]);
-                field.SetValue(this, value);
+                bool shouldDeserialize = true;
+                if (settings != null && !string.IsNullOrEmpty(settings.OnlyIfSet))
+                    if (!CheckIsSet(settings.OnlyIfSet))
+                        shouldDeserialize = false;
+
+                if (settings != null && !string.IsNullOrEmpty(settings.OnlyIfNotSet))
+                    if (CheckIsSet(settings.OnlyIfNotSet))
+                        shouldDeserialize = false;
+
+                if (shouldDeserialize)
+                {
+                    object value = DeserializeValueText(field.FieldType, settings, package, values[valueIdx]);
+                    field.SetValue(this, value);
+                }
 
                 valueIdx++;
             }
@@ -224,6 +254,43 @@ namespace DQAsset
             return retVal;
         }
 
+        void SerializeBool(SerializerAttribute settings, BinaryWriter writer, PackageFile package, object value, bool isListElement)
+        {
+            var val = (bool)value;
+            if (isListElement)
+            {
+                writer.Write(val ? (byte)1 : (byte)0);
+                return;
+            }
+            else
+            {
+                if (settings != null)
+                {
+                    if (settings.Size == 1)
+                    {
+                        writer.Write(val ? (byte)1 : (byte)0);
+                        return;
+                    }
+                    if (settings.Size == 2)
+                    {
+                        writer.Write(val ? (ushort)1 : (ushort)0);
+                        return;
+                    }
+                    if (settings.Size == 4)
+                    {
+                        writer.Write(val ? (uint)1 : (uint)0);
+                        return;
+                    }
+                    if (settings.Size == 8)
+                    {
+                        writer.Write(val ? (ulong)1 : (ulong)0);
+                        return;
+                    }
+                }
+            }
+            writer.Write(val ? (int)1 : (int)0);
+        }
+
         public void SerializeValue(Type type, SerializerAttribute settings, BinaryWriter writer, PackageFile package, object value, bool isListElement = false)
         {
             switch(type.Name)
@@ -236,11 +303,7 @@ namespace DQAsset
                     writer.Write((byte[])value);
                     break;
                 case "Boolean":
-                    var val = (bool)value;
-                    if (isListElement)
-                        writer.Write(val ? (byte)1 : (byte)0);
-                    else
-                        writer.Write(val ? 1 : 0);
+                    SerializeBool(settings, writer, package, value, isListElement);
                     break;
                 case "Byte":
                     writer.Write((byte)value);
@@ -296,6 +359,24 @@ namespace DQAsset
             }
         }
 
+        object DeserializeBool(SerializerAttribute settings, BinaryReader reader, PackageFile package, bool isListElement)
+        {
+            if (isListElement)
+                return reader.ReadByte() != 0;
+            if (settings != null)
+            {
+                if(settings.Size == 1)
+                    return reader.ReadByte() != 0;
+                if (settings.Size == 2)
+                    return reader.ReadUInt16() != 0;
+                if (settings.Size == 4)
+                    return reader.ReadUInt32() != 0;
+                if (settings.Size == 8)
+                    return reader.ReadUInt64() != 0;
+            }
+            return reader.ReadUInt32() != 0;
+        }
+
         public object DeserializeValue(Type type, SerializerAttribute settings, BinaryReader reader, PackageFile package, bool isListElement = false)
         {
             switch (type.Name)
@@ -307,7 +388,7 @@ namespace DQAsset
                     byte[] data = reader.ReadBytes(sz);
                     return data;
                 case "Boolean":
-                    return (isListElement ? reader.ReadByte() : reader.ReadInt32()) != 0;
+                    return DeserializeBool(settings, reader, package, isListElement);
                 case "Byte":
                     return reader.ReadByte();
                 case "Int16":
@@ -358,24 +439,56 @@ namespace DQAsset
 
             return null;
         }
-        public void Deserialize(BinaryReader reader, PackageFile package)
+
+        bool CheckIsSet(string fieldName)
+        {
+            var fields = GetType().GetFields().OrderBy(field => field.MetadataToken); // hack to get fields in order of declaration (todo: use something less hacky, this might break mono?)
+            foreach (var field in fields)
+            {
+                if(field.Name == fieldName)
+                {
+                    return (bool)field.GetValue(this);
+                }
+            }
+            return false;
+        }
+
+        public virtual void Deserialize(BinaryReader reader, PackageFile package)
         {
             var fields = GetType().GetFields().OrderBy(field => field.MetadataToken); // hack to get fields in order of declaration (todo: use something less hacky, this might break mono?)
             foreach (var field in fields)
             {
                 var settings = field.GetCustomAttribute<SerializerAttribute>();
+
+                if(settings != null && !string.IsNullOrEmpty(settings.OnlyIfSet))
+                    if (!CheckIsSet(settings.OnlyIfSet))
+                        continue;
+
+                if (settings != null && !string.IsNullOrEmpty(settings.OnlyIfNotSet))
+                    if (CheckIsSet(settings.OnlyIfNotSet))
+                        continue;
+
                 var fieldType = field.FieldType.Name;
                 object value = DeserializeValue(field.FieldType, settings, reader, package);
                 field.SetValue(this, value);
             }
         }
 
-        public void Serialize(BinaryWriter writer, PackageFile package)
+        public virtual void Serialize(BinaryWriter writer, PackageFile package)
         {
             var fields = GetType().GetFields().OrderBy(field => field.MetadataToken); // hack to get fields in order of declaration (todo: use something less hacky, this might break mono?)
             foreach (var field in fields)
             {
                 var settings = field.GetCustomAttribute<SerializerAttribute>();
+
+                if (settings != null && !string.IsNullOrEmpty(settings.OnlyIfSet))
+                    if (!CheckIsSet(settings.OnlyIfSet))
+                        continue;
+
+                if (settings != null && !string.IsNullOrEmpty(settings.OnlyIfNotSet))
+                    if (CheckIsSet(settings.OnlyIfNotSet))
+                        continue;
+
                 var fieldType = field.FieldType.Name;
                 SerializeValue(field.FieldType, settings, writer, package, field.GetValue(this));
             }

@@ -30,5 +30,9 @@ namespace DQAsset
 
         // Won't be written into/read from CSV file, eg. for padding bytes, if used make sure to remove PropertiesData.Clear() line from Program.cs!
         public bool Hidden { get; set; }
+
+        // Only serializes/deserializes if field is set
+        public string OnlyIfSet { get; set; }
+        public string OnlyIfNotSet { get; set; }
     }
 }

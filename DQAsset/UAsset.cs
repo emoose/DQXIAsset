@@ -394,7 +394,8 @@ namespace DQAsset
 
                 var objectProperty = prop as ObjectProperty;
                 if(!PackageFile.KnownTypes.TryGetValue(objectProperty.Value.ImportObject.ObjectName.Value, out rowType))
-                    throw new Exception($"UAsset uses unknown struct type {objectProperty.Value.ImportObject.ObjectName.Value}!");
+                    if (!PackageFile.KnownTypes.TryGetValue("F" + objectProperty.Value.ImportObject.ObjectName.Value, out rowType))
+                        throw new Exception($"UAsset uses unknown struct type {objectProperty.Value.ImportObject.ObjectName.Value}!");
 
                 break; // probably shouldn't be doing this, hopefully all DQXI tables only contain a single ObjectProperty...
             }
@@ -502,7 +503,8 @@ namespace DQAsset
 
                 Type? propertyType;
                 if (!PackageFile.KnownTypes.TryGetValue(tag.Type.Value, out propertyType))
-                    throw new Exception($"UAsset uses unknown struct type {tag.Type.Value}!");
+                    if (!PackageFile.KnownTypes.TryGetValue("F" + tag.Type.Value, out propertyType))
+                        throw new Exception($"UAsset uses unknown struct type {tag.Type.Value}!");
 
                 var prop = Activator.CreateInstance(propertyType) as ISerializable;
                 prop.Deserialize(reader, package);
@@ -525,7 +527,8 @@ namespace DQAsset
 
                 Type? propertyType;
                 if (!PackageFile.KnownTypes.TryGetValue(objectProperty.Value.ImportObject.ObjectName.Value, out propertyType))
-                    throw new Exception($"UAsset uses unknown struct type {objectProperty.Value.ImportObject.ObjectName.Value}!");
+                    if (!PackageFile.KnownTypes.TryGetValue("F" + objectProperty.Value.ImportObject.ObjectName.Value, out propertyType))
+                        throw new Exception($"UAsset uses unknown struct type {objectProperty.Value.ImportObject.ObjectName.Value}!");
 
                 for (int i = 0; i < count; i++)
                 {

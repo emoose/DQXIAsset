@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace DQAsset
@@ -29,21 +30,44 @@ namespace DQAsset
             }
         }
 
-        static void Main(string[] args)
+        // some code to help with C++ -> C# struct conversion...
+        static void JackDTStructsPostProcess()
         {
-            if(args.Length < 1)
+            var lines = File.ReadAllLines(@"C:\src\DQAsset\JackDTStructs.txt");
+            var res = "";
+            foreach(var line in lines)
             {
-                Console.WriteLine("Usage: DQAsset.exe <path/to/uasset/or/csv>");
-                Console.WriteLine("Will convert UAsset/UExp pair to CSV, or CSV to UAsset/UExp pair");
-                Console.WriteLine();
-                Console.WriteLine("Note that CSV should have the original UAsset/UExp files next to it, for DQAsset to use as a base to update");
-                Console.WriteLine("Updated UAsset/UExp pair will be written to <path>_mod.uasset/uexp");
-                Console.WriteLine();
-                Console.WriteLine("(currently rows can't be removed but should be possible to add new ones - same for any FNames)");
-                return;
-            }
+                var curLine = line;
+                if (curLine.Contains(" MISSED OFFSET"))
+                    continue;
 
-            var inputFile = args[0];
+                if ((curLine.Contains("[0x10]") || curLine.Contains("[0x18]")) && curLine.Contains("UNKNOWN PROPERTY:") &&
+                    (curLine.Contains("SoftObjectProperty") || curLine.Contains("SoftClassProperty") || curLine.Contains("ArrayProperty")))
+                {
+                    var fieldLast = curLine.LastIndexOf('.');
+                    var fieldName = curLine.Substring(fieldLast + 1);
+                    if (!curLine.Contains("ArrayProperty"))
+                        curLine = "    public FName " + fieldName + ";";
+                    else
+                        curLine = "    public List<FName> " + fieldName + ";";
+                }
+                else if (curLine.Contains("*") || curLine.Contains("TWeakObjectPtr"))
+                    curLine = "    //" + curLine.Substring(4);
+
+                if(curLine.Contains("TEnumAsByte<"))
+                    curLine = curLine.Replace("TEnumAsByte<", "").Replace(">", ""); // meh
+
+                curLine = curLine.Replace(" : public ", " // : public ");
+
+                curLine = curLine.Replace("public struct ", "public ");
+                
+                res += curLine + "\r\n";
+            }
+            File.WriteAllText(@"C:\src\DQAsset\JackDTStructs_new3.txt", res);
+        }
+
+        static void HandleInput(string inputFile)
+        {
             var inputUAsset = inputFile;
             var outputFile = Path.ChangeExtension(inputFile, ".csv");
 
@@ -56,7 +80,7 @@ namespace DQAsset
                 convertingToText = false;
                 inputUAsset = Path.ChangeExtension(inputFile, ".uasset");
             }
-            if(!File.Exists(inputUAsset))
+            if (!File.Exists(inputUAsset))
             {
                 Console.WriteLine("failed to load base uasset from path");
                 Console.WriteLine($"  {inputUAsset}");
@@ -64,7 +88,7 @@ namespace DQAsset
             }
 
             var package = ReadPackage(inputUAsset);
-            if(convertingToText)
+            if (convertingToText)
             {
                 File.WriteAllText(outputFile, package.SerializeText());
                 Console.WriteLine("wrote out CSV to path");
@@ -73,7 +97,7 @@ namespace DQAsset
             }
 
             // Not converting to text, must be converting from text
-            if(!File.Exists(inputFile))
+            if (!File.Exists(inputFile))
             {
                 Console.WriteLine("failed to load csv data from path");
                 Console.WriteLine($"  {inputFile}");
@@ -98,6 +122,82 @@ namespace DQAsset
 
             Console.WriteLine("wrote out uasset/uexp files to path");
             Console.WriteLine($"  {outputFile}.uasset/uexp");
+        }
+
+        static List<string> FileBlackList = new List<string>()
+        {
+            // most of these seem to use UserDefinedStructs (UDS), not sure how to handle those yet
+            "DT_CharaLookByMaps.uasset",
+            "DT_Coordinate.uasset", // strange file
+            "DT_Crowd_SetList.uasset",
+            "DT_DebugAutoPlay.uasset",
+            "DT_DebugChairAnimation.uasset",
+            "DT_DebugCommandMacro.uasset", // seems to work fine, but contains newline chars (and is huge)
+            "DT_DebugCsCoordinate.uasset",
+            "DT_DebugNpcAnimation.uasset",
+            "DT_DebugNpcAnimCheck.uasset",
+            "DT_DebugNpcClassCoordinate.uasset",
+            "DT_DebugNpcSpawnTable.uasset",
+            "DT_NavBuild.uasset",
+            "DT_GameFlagDataCutScene.uasset", // requires JackDataTableGameFlagCutScene, not in DQXIS?
+            "DT_GameFlagDataScenario.uasset", // requires JackDataTableGameFlagDataScenario, not in DQXIS?
+            "DT_NativizationAsset.uasset", // requires UObject struct?!
+            "DT_NativizationAssetPath.uasset", // weird struct includes new bytes at random?
+            "DT_ItemTable_ArticleInfo.uasset", // requires JackDataTableItemArticleInfo struct
+            "DT_MonsterDeploy_D01.uasset", // requires JackDataTableMonsterDeploySerialize
+            "DT_OddEffectBattleText.uasset", // JackDataTableOddEffectBattleText
+            "DT_OverrideText.uasset", // JackDataTableOverrideText
+            "DT_TextDataFukidasi.uasset", // JackDataTableFukidasi
+            "DT_BattleAutoCameraCollision.uasset", // UDS
+            "DT_AnimDynamics_M004.uasset", // JackDataTableAnimDynamicsTableProperties
+            "DT_G377E005.uasset", //JackDataTableAnimDynamicsTableProperties
+            "DT_DynamicBoneState_Hair.uasset", // JackDataTableAnimExp_DynamicBoneStateDef
+            "DT_PokerItem_.uasset" // UDS
+        };
+
+        static void BatchFolder(string folderPath)
+        {
+            var assets = Directory.GetFiles(folderPath, "*.uasset", SearchOption.AllDirectories);
+            foreach (var asset in assets)
+            {
+                var fname = Path.GetFileName(asset);
+                if (FileBlackList.Contains(fname) ||
+                    fname.StartsWith("DT_MonsterDeploy_") ||
+                    fname.StartsWith("DT_AnimDynamics_") ||
+                    fname.StartsWith("DT_PokerItem_") ||
+                    asset.Contains(@"\DataTables\Vehicle\Dynamics\") || // see DT_G377E005.uasset
+                    asset.Contains(@"\DataTables\Character\Dynamics\AnimDynamics\") || // see DT_G377E005.uasset
+                    asset.Contains(@"\DataTables\Character\Dynamics\BoneControl\") || // see DT_DynamicBoneState_Hair.uasset
+                    asset.Contains(@"\DataTables\Character\Dynamics\AnimExpression\")) // JackDataTableAnimExp_AverageRot
+
+                {
+                    Console.WriteLine("blacklisted: " + asset);
+                    continue;
+                }
+                Console.WriteLine(asset);
+                HandleInput(asset);
+            }
+        }
+
+        static void Main(string[] args)
+        {
+            //JackDTStructsPostProcess();
+            //BatchFolder(@"C:\Games\JackGame\Content\DataTables");
+
+            if (args.Length < 1)
+            {
+                Console.WriteLine("Usage: DQAsset.exe <path/to/uasset/or/csv>");
+                Console.WriteLine("Will convert UAsset/UExp pair to CSV, or CSV to UAsset/UExp pair");
+                Console.WriteLine();
+                Console.WriteLine("Note that CSV should have the original UAsset/UExp files next to it, for DQAsset to use as a base to update");
+                Console.WriteLine("Updated UAsset/UExp pair will be written to <path>_mod.uasset/uexp");
+                Console.WriteLine();
+                Console.WriteLine("(currently rows can't be removed but should be possible to add new ones - same for any FNames)");
+                return;
+            }
+
+            var inputFile = args[0];
+            HandleInput(inputFile);
         }
     }
 }

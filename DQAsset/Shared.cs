@@ -211,10 +211,15 @@ namespace DQAsset
         public static void WriteFString(this BinaryWriter writer, string val)
         {
             var data = Encoding.UTF8.GetBytes(val);
+			var length = data.Length + 1;
+			if (data.Length == 0)
+				length = 0;
 
-            writer.Write(data.Length + 1);
+            writer.Write(length);
             writer.Write(data);
-            writer.Write((byte)0);
+
+			if (data.Length > 0)
+				writer.Write((byte)0);
         }
 
         public static string ReadFString(this BinaryReader reader)

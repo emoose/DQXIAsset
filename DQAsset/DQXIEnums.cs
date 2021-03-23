@@ -12032,4 +12032,181 @@ namespace DQAsset
         EJackVoiceDramaSelectAnimButton__XButton = 2,
         EJackVoiceDramaSelectAnimButton__MAX = 3
     }
+
+    // Enum JackAnimNodeRuntime.EJackAnimPhysSimSpaceType
+    public enum EJackAnimPhysSimSpaceType : byte
+    {
+        EJackAnimPhysSimSpaceType__Component = 0,
+        EJackAnimPhysSimSpaceType__Actor = 1,
+        EJackAnimPhysSimSpaceType__World = 2,
+        EJackAnimPhysSimSpaceType__RootRelative = 3,
+        EJackAnimPhysSimSpaceType__BoneRelative = 4,
+        EJackAnimPhysSimSpaceType__EJackAnimPhysSimSpaceType_MAX = 5
+    }
+
+    // Enum JackAnimNodeRuntime.EJackWindEffectDecayRate
+    public enum EJackWindEffectDecayRate : byte
+    {
+        EJackWindEffectDecayRate__NoDecay = 0,
+        EJackWindEffectDecayRate__Linear = 1,
+        EJackWindEffectDecayRate__Square = 2,
+        EJackWindEffectDecayRate__EJackWindEffectDecayRate_MAX = 3
+    };
+
+    // Enum JackAnimNodeRuntime.EJackAnimPhysLinearConstraintType
+    public enum EJackAnimPhysLinearConstraintType : byte
+    {
+        EJackAnimPhysLinearConstraintType__Free = 0,
+        EJackAnimPhysLinearConstraintType__Limited = 1,
+        EJackAnimPhysLinearConstraintType__EJackAnimPhysLinearConstraintType_MAX = 2
+    }
+
+    // Enum JackAnimNodeRuntime.EJackAnimPhysAngularConstraintType
+    public enum EJackAnimPhysAngularConstraintType : byte
+    {
+        EJackAnimPhysAngularConstraintType__Angular = 0,
+        EJackAnimPhysAngularConstraintType__Cone = 1,
+        EJackAnimPhysAngularConstraintType__EJackAnimPhysAngularConstraintType_MAX = 2
+    }
+
+    // Enum JackAnimNodeRuntime.EJackAnimDynamicsSphericalLimitType
+    public enum EJackAnimDynamicsSphericalLimitType : byte
+    {
+        EJackAnimDynamicsSphericalLimitType__Inner = 0,
+        EJackAnimDynamicsSphericalLimitType__Outer = 1,
+        EJackAnimDynamicsSphericalLimitType__EJackAnimDynamicsSphericalLimitType_MAX = 2
+    }
+
+    // Enum JackAnimNodeRuntime.EJackMantleDynamicBoneState
+    public enum EJackMantleDynamicBoneState : byte
+    {
+        EJackMantleDynamicBoneState__Default = 0,
+        EJackMantleDynamicBoneState__Sim_CapeMantle = 1,
+        EJackMantleDynamicBoneState__Sim_MantleC = 2,
+        EJackMantleDynamicBoneState__Sim_MantleC_N013 = 3,
+        EJackMantleDynamicBoneState__Sim_MantleB = 4,
+        EJackMantleDynamicBoneState__Sim_CapeMantle_N002 = 5,
+        EJackMantleDynamicBoneState__Sim_MantleC_N002 = 6,
+        EJackMantleDynamicBoneState__Sim_MantleC_N014 = 7,
+        EJackMantleDynamicBoneState__Sim_MantleC_P004 = 8,
+        EJackMantleDynamicBoneState__Sim_MantleC_P008 = 9,
+        EJackMantleDynamicBoneState__Sim_MantleC_P007 = 10,
+        EJackMantleDynamicBoneState__Sim_MantleC_P002 = 11,
+        EJackMantleDynamicBoneState__EJackMantleDynamicBoneState_MAX = 12
+    }
+
+
+    // Enum JackAnimNodeRuntime.EJackHairDynamicBoneState
+    public enum EJackHairDynamicBoneState : byte
+    {
+        EJackHairDynamicBoneState__Default = 0,
+        EJackHairDynamicBoneState__Pose_P008Hair = 1,
+        EJackHairDynamicBoneState__Pose_P004Hair = 2,
+        EJackHairDynamicBoneState__Pose_N101Hair = 3,
+        EJackHairDynamicBoneState__Pose_N001Hair = 4,
+        EJackHairDynamicBoneState__Pose_P003Hair = 5,
+        EJackHairDynamicBoneState__Sim_P004ShortHair = 6,
+        EJackHairDynamicBoneState__Sim_ShortHairUpMidLow = 7,
+        EJackHairDynamicBoneState__Sim_C_RearHairH = 8,
+        EJackHairDynamicBoneState__Sim_C_RearHairA = 9,
+        EJackHairDynamicBoneState__Sim_PlayerHair = 10,
+        EJackHairDynamicBoneState__Sim_LR_RearHairA = 11,
+        EJackHairDynamicBoneState__Pose_LR_RearHairD1 = 12,
+        EJackHairDynamicBoneState__Pose_C_RearHairB1 = 13,
+        EJackHairDynamicBoneState__Pose_LR_SideHairI1 = 14,
+        EJackHairDynamicBoneState__Pose_C_RearHairG1 = 15,
+        EJackHairDynamicBoneState__Pose_LR_SideHairJ1 = 16,
+        EJackHairDynamicBoneState__Pose_RearHairILL = 17,
+        EJackHairDynamicBoneState__Pose_RearHairKPP = 18,
+        EJackHairDynamicBoneState__Pose_SideHairF1 = 19,
+        EJackHairDynamicBoneState__Pose_C_RearHairL1 = 20,
+        EJackHairDynamicBoneState__Pose_LR_SideHairK1 = 21,
+        EJackHairDynamicBoneState__Pose_R_FrontHairE1 = 22,
+        EJackHairDynamicBoneState__Pose_ChestHairA1 = 23,
+        EJackHairDynamicBoneState__Pose_NeckHoodA1 = 24,
+        EJackHairDynamicBoneState__Pose_HeadVeilB1 = 25,
+        EJackHairDynamicBoneState__Pose_C_RearHairN1 = 26,
+        EJackHairDynamicBoneState__Pose_C_RearHairQ1 = 27,
+        EJackHairDynamicBoneState__Sim_BeardD1 = 28,
+        EJackHairDynamicBoneState__Pose_HeadVeilC1 = 29,
+        EJackHairDynamicBoneState__Pose_RearHairP1 = 30,
+        EJackHairDynamicBoneState__Sim_C_BeardB = 31,
+        EJackHairDynamicBoneState__Sim_N104Hair = 32,
+        EJackHairDynamicBoneState__Sim_C_HairTailA1 = 33,
+        EJackHairDynamicBoneState__Sim_C_HairTailB1 = 34,
+        EJackHairDynamicBoneState__Pose_LR_SideHairL1 = 35,
+        EJackHairDynamicBoneState__EJackHairDynamicBoneState_MAX = 36
+    }
+
+    // Enum JackAnimNodeRuntime.EJackLowerDynamicBoneState
+    public enum EJackLowerDynamicBoneState : byte
+    {
+        EJackLowerDynamicBoneState__Default = 0,
+        EJackLowerDynamicBoneState__RtEx_Skirt_Length1 = 1,
+        EJackLowerDynamicBoneState__RtEx_Skirt_Length2 = 2,
+        EJackLowerDynamicBoneState__RtEx_Skirt_Length3 = 3,
+        EJackLowerDynamicBoneState__RtEx_Skirt_Length4 = 4,
+        EJackLowerDynamicBoneState__RtEx_SBSkirt = 5,
+        EJackLowerDynamicBoneState__RtEx_FtSkirt_Length2 = 6,
+        EJackLowerDynamicBoneState__RtEx_FtSkirt_Length3 = 7,
+        EJackLowerDynamicBoneState__RtEx_FtSkirt_Length3_N008 = 8,
+        EJackLowerDynamicBoneState__RtEx_FtSkirt_Length3_N010 = 9,
+        EJackLowerDynamicBoneState__RtEx_FtSkirt_Length3_N013 = 10,
+        EJackLowerDynamicBoneState__RtEx_HipsArmor = 11,
+        EJackLowerDynamicBoneState__RtEx_HipsArmor_N001 = 12,
+        EJackLowerDynamicBoneState__RtEx_HipsArmor_N004 = 13,
+        EJackLowerDynamicBoneState__RtEx_SouthSkirtK1 = 14,
+        EJackLowerDynamicBoneState__RtEx_P004Skirt = 15,
+        EJackLowerDynamicBoneState__RtEx_HrSkirtA = 16,
+        EJackLowerDynamicBoneState__Sim_KtAcce = 17,
+        EJackLowerDynamicBoneState__RtEx_HipsSideArmor = 18,
+        EJackLowerDynamicBoneState__RtEx_P001Skirt = 19,
+        EJackLowerDynamicBoneState__Sim_LR_LoinclothA1 = 20,
+        EJackLowerDynamicBoneState__Sim_TailSkirtA1 = 21,
+        EJackLowerDynamicBoneState__Sim_LR_NpcPantsI3 = 22,
+        EJackLowerDynamicBoneState__RtEx_FBSkirtA1 = 23,
+        EJackLowerDynamicBoneState__RtEx_NmSkirtB1 = 24,
+        EJackLowerDynamicBoneState__RtEx_NmSkirtA1 = 25,
+        EJackLowerDynamicBoneState__RtEx_SlideSkirt = 26,
+        EJackLowerDynamicBoneState__RtEx_FBSkirtB1 = 27,
+        EJackLowerDynamicBoneState__RtEx_SouthSkirtQ1 = 28,
+        EJackLowerDynamicBoneState__RtEx_NorthSkirtS1 = 29,
+        EJackLowerDynamicBoneState__Sim_DancerSkirt = 30,
+        EJackLowerDynamicBoneState__RtEx_P002_Skirt = 31,
+        EJackLowerDynamicBoneState__RtEx_N008_SamaCoat = 32,
+        EJackLowerDynamicBoneState__RtEx_FtSkirt_Length2_N013 = 33,
+        EJackLowerDynamicBoneState__RtEx_SouthSkirtK1Long_P001 = 34,
+        EJackLowerDynamicBoneState__RtEx_HipsArmor_P001 = 35,
+        EJackLowerDynamicBoneState__RtEx_SouthSkirtK1Short_P001 = 36,
+        EJackLowerDynamicBoneState__RtEx_HipsArmor_P004 = 37,
+        EJackLowerDynamicBoneState__RtEx_SouthSkirtK1Short_P008 = 38,
+        EJackLowerDynamicBoneState__RtEx_HipsArmor_P008 = 39,
+        EJackLowerDynamicBoneState__RtEx_FBSkirtA1_P006 = 40,
+        EJackLowerDynamicBoneState__RtEx_RCSkirt_Length3 = 41,
+        EJackLowerDynamicBoneState__RtEx_RCSkirt_Length4 = 42,
+        EJackLowerDynamicBoneState__RtEx_SouthSkirtK1Long_P006 = 43,
+        EJackLowerDynamicBoneState__RtEx_NmSkirtD1 = 44,
+        EJackLowerDynamicBoneState__RtEx_P002_DelayLegPants = 45,
+        EJackLowerDynamicBoneState__RtEx_BunnySkirt_P006 = 46,
+        EJackLowerDynamicBoneState__RtEx_SwimSkirt_P006 = 47,
+        EJackLowerDynamicBoneState__RtEx_PrinSkirt_P006 = 48,
+        EJackLowerDynamicBoneState__RtEx_HipsArmor_P002 = 49,
+        EJackLowerDynamicBoneState__RtEx_Bt_NimaSkirt = 50,
+        EJackLowerDynamicBoneState__EJackLowerDynamicBoneState_MAX = 51
+    }
+
+    // Enum JackAnimNodeRuntime.EJackUpperDynamicBoneState
+    public enum EJackUpperDynamicBoneState : byte
+    {
+        EJackUpperDynamicBoneState__Default = 0,
+        EJackUpperDynamicBoneState__Sim_CollarA = 1,
+        EJackUpperDynamicBoneState__Sim_RearHood = 2,
+        EJackUpperDynamicBoneState__RtEx_LR_ShoulderClothA1 = 3,
+        EJackUpperDynamicBoneState__Sim_NPC_ParadeFar = 4,
+        EJackUpperDynamicBoneState__Sim_P001_ParadeFeather = 5,
+        EJackUpperDynamicBoneState__Sim_P005_ParadeFeatherBlack = 6,
+        EJackUpperDynamicBoneState__Sim_CollarA_N008 = 7,
+        EJackUpperDynamicBoneState__Sim_CollarE_P007 = 8,
+        EJackUpperDynamicBoneState__EJackUpperDynamicBoneState_MAX = 9
+    }
 }

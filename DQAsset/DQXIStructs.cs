@@ -630,62 +630,105 @@ namespace DQAsset
         public EJackMonsterActiveScenario ActiveScenario;                                           // 0x005A(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public int PartyMonsterTotalLimit;                                   // 0x005C(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public FName PartyMonsterId1;                                          // 0x0060(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+
+        [Serializer(OnlyIfSet = "PartyMonsterId1")]
         public int PartyMonsterMin1;                                         // 0x0068(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId1")]
         public int PartyMonsterMax1;                                         // 0x006C(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId1")]
         public float PartyMonsterLotteryRate1;                                 // 0x0070(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+
         public FName PartyMonsterId2;                                          // 0x0078(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId2")]
         public int PartyMonsterMin2;                                         // 0x0080(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId2")]
         public int PartyMonsterMax2;                                         // 0x0084(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId2")]
         public float PartyMonsterLotteryRate2;                                 // 0x0088(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public FName PartyMonsterId3;                                          // 0x0090(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId3")]
         public int PartyMonsterMin3;                                         // 0x0098(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId3")]
         public int PartyMonsterMax3;                                         // 0x009C(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId3")]
         public float PartyMonsterLotteryRate3;                                 // 0x00A0(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public FName PartyMonsterId4;                                          // 0x00A8(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId4")]
         public int PartyMonsterMin4;                                         // 0x00B0(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId4")]
         public int PartyMonsterMax4;                                         // 0x00B4(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId4")]
         public float PartyMonsterLotteryRate4;                                 // 0x00B8(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public FName PartyMonsterId5;                                          // 0x00C0(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId5")]
         public int PartyMonsterMin5;                                         // 0x00C8(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId5")]
         public int PartyMonsterMax5;                                         // 0x00CC(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId5")]
         public float PartyMonsterLotteryRate5;                                 // 0x00D0(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public FName PartyMonsterId6;                                          // 0x00D8(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId6")]
         public int PartyMonsterMin6;                                         // 0x00E0(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId6")]
         public int PartyMonsterMax6;                                         // 0x00E4(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId6")]
         public float PartyMonsterLotteryRate6;                                 // 0x00E8(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public FName PartyMonsterId7;                                          // 0x00F0(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId7")]
         public int PartyMonsterMin7;                                         // 0x00F8(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId7")]
         public int PartyMonsterMax7;                                         // 0x00FC(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId7")]
         public float PartyMonsterLotteryRate7;                                 // 0x0100(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public FName PartyMonsterId8;                                          // 0x0108(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId8")]
         public int PartyMonsterMin8;                                         // 0x0110(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId8")]
         public int PartyMonsterMax8;                                         // 0x0114(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "PartyMonsterId8")]
         public float PartyMonsterLotteryRate8;                                 // 0x0118(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+
         public FName MetalEncountId;                                           // 0x0120(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public float SpPartyRate;                                              // 0x0128(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public FName SpPartyMonsterId1;                                        // 0x0130(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "SpPartyMonsterId1")]
         public int SpPartyMonsterMin1;                                       // 0x0138(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "SpPartyMonsterId1")]
         public int SpPartyMonsterMax1;                                       // 0x013C(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public FName SpPartyMonsterId2;                                        // 0x0140(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "SpPartyMonsterId2")]
         public int SpPartyMonsterMin2;                                       // 0x0148(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "SpPartyMonsterId2")]
         public int SpPartyMonsterMax2;                                       // 0x014C(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public FName SpPartyMonsterId3;                                        // 0x0150(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "SpPartyMonsterId3")]
         public int SpPartyMonsterMin3;                                       // 0x0158(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "SpPartyMonsterId3")]
         public int SpPartyMonsterMax3;                                       // 0x015C(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public FName SpPartyMonsterId4;                                        // 0x0160(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "SpPartyMonsterId4")]
         public int SpPartyMonsterMin4;                                       // 0x0168(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "SpPartyMonsterId4")]
         public int SpPartyMonsterMax4;                                       // 0x016C(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public FName SpPartyMonsterId5;                                        // 0x0170(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "SpPartyMonsterId5")]
         public int SpPartyMonsterMin5;                                       // 0x0178(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "SpPartyMonsterId5")]
         public int SpPartyMonsterMax5;                                       // 0x017C(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public FName SpPartyMonsterId6;                                        // 0x0180(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "SpPartyMonsterId6")]
         public int SpPartyMonsterMin6;                                       // 0x0188(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "SpPartyMonsterId6")]
         public int SpPartyMonsterMax6;                                       // 0x018C(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public FName SpPartyMonsterId7;                                        // 0x0190(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "SpPartyMonsterId7")]
         public int SpPartyMonsterMin7;                                       // 0x0198(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "SpPartyMonsterId7")]
         public int SpPartyMonsterMax7;                                       // 0x019C(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public FName SpPartyMonsterId8;                                        // 0x01A0(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "SpPartyMonsterId8")]
         public int SpPartyMonsterMin8;                                       // 0x01A8(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        [Serializer(OnlyIfSet = "SpPartyMonsterId8")]
         public int SpPartyMonsterMax8;                                       // 0x01AC(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public EJackMonsterPopCondition PopCondition;                                             // 0x01B0(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public FName PopConditionMontageKey;                                   // 0x01B8(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
@@ -1120,10 +1163,12 @@ namespace DQAsset
         public FName IndefPlr;                                                 // 0x0050(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public FName IndefPlrIT;                                               // 0x0058(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public string Plr;                                                      // 0x0060(0x0010) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance)
-        public bool PlrNounFlag;                                              // 0x0070(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-        public bool ProNounFlag;                                              // 0x0071(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-        public bool VowelFlag;                                                // 0x0072(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-        public bool LastIsSFlag;                                              // 0x0073(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public byte Flags;
+        // TODO: following are stored in byte above
+        //public bool PlrNounFlag;                                              // 0x0070(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        //public bool ProNounFlag;                                              // 0x0071(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        //public bool VowelFlag;                                                // 0x0072(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        //public bool LastIsSFlag;                                              // 0x0073(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public string List;                                                     // 0x0078(0x0010) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance)
     }
 
@@ -1133,6 +1178,13 @@ namespace DQAsset
     {
         public FJackArticleInfo ArticleInfo;                                              // 0x0008(0x0088) (Edit, BlueprintVisi, BlueprintReadOnly, DisableEditOnInstance)
     }
+
+    // ScriptStruct JackGame.JackDataTableItemArticleInfo
+    // 0x0008 (0x0098 - 0x0090)
+    public class FJackDataTableItemArticleInfo : FJackDataTableArticleInfo
+    {
+        public int PhoneticNo;                                               // 0x0090(0x0004) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+    };
 
     // ScriptStruct JackGame.JackDataTableAttachedProps
     // 0x0020 (0x0028 - 0x0008)
@@ -1245,7 +1297,7 @@ namespace DQAsset
         public EJackScenarioID ScenarioID;                                               // 0x0008(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public int No;                                                       // 0x000C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public FName ScenarioFlag;                                             // 0x0010(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-        public List<EJackGameFlagCategory>         SubFlagCategory;                                          // 0x0018(0x0010) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance)
+        public List<EJackGameFlagCategory> SubFlagCategory;                                          // 0x0018(0x0010) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance)
         public List<FName> SubFlagName;                                              // 0x0028(0x0010) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance)
         public List<FName> Item;                                                     // 0x0038(0x0010) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance)
         public List<EJackMapIDType> MapIDType;                                                // 0x0048(0x0010) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance)
@@ -2363,7 +2415,7 @@ namespace DQAsset
 
     // ScriptStruct JackGame.JackDataTableFukidasi
     // 0x0008 (0x0038 - 0x0030)
-    public class FJackDataTableFukidasi // : public FJackDataTableText
+    public class FJackDataTableFukidasi : FJackDataTableText
     {
         public EJackFukidasiType FukidasiType;                                             // 0x0030(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public EJackFukidasiDuration FukidasiDuration;                                         // 0x0031(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
@@ -2528,6 +2580,18 @@ namespace DQAsset
         // TODO public byte bResistLoad : 1;                                          // 0x0030(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, DisableEditOnInstance)
     }
 
+    // ScriptStruct JackGame.JackDataTableGameFlagScenario
+    // 0x0008 (0x0040 - 0x0038)
+    public class FJackDataTableGameFlagScenario : FJackDataTableGameFlag
+    {
+        public byte ScenarioFlags;
+        //TODO public bool bScenarioFlag;                                            // 0x0038(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        //TODO public bool bScenarioFlagLVD;                                         // 0x0039(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        //TODO public bool bUpdatesLatestFlag;                                       // 0x003A(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public EJackScenarioID ScenarioID;                                               // 0x003B(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int ScenarioFlagIndex;                                        // 0x003C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+    }
+
     // ScriptStruct JackGame.JackDataTableGuestNPCList
     // 0x0018 (0x0020 - 0x0008)
     public class FJackDataTableGuestNPCList : FTableRowBase
@@ -2622,6 +2686,14 @@ namespace DQAsset
         public FName EquipmentSkeletalMesh_Sub;
         public EJackItem_EquipmentSE EquipmentSE;                                              // 0x01E0(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public int TripleItemNo;                                             // 0x01E4(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+    }
+
+    // ScriptStruct JackGame.JackDataTableGameFlagCutScene
+    // 0x0008 (0x0040 - 0x0038) JackDataTableGameFlagCutScene
+    public class FJackDataTableGameFlagCutScene : FJackDataTableGameFlag
+    {
+        [Serializer(Size = 1)]
+        public bool                                               bCutSceneFlag;                                            // 0x0038(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
     }
 
     // ScriptStruct JackGame.JackDataTableItem_Equipment
@@ -4047,6 +4119,13 @@ namespace DQAsset
         public float ExceptionCameraRotateYaw;                                 // 0x0058(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
     }
 
+    // ScriptStruct JackGame.JackDataTableMonsterDeploySerialize
+    // 0x0000 (0x0228 - 0x0228)
+    public class FJackDataTableMonsterDeploySerialize : FJackDataTableMonsterDeploy
+    {
+
+    }
+
     // ScriptStruct JackGame.JackDataTableMonsterFieldAI
     // 0x0030 (0x0038 - 0x0008)
     public class FJackDataTableMonsterFieldAI : FTableRowBase
@@ -4611,6 +4690,13 @@ namespace DQAsset
         public List<float> ClearDamagePerPC;                                         // 0x0008(0x0010) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance)
         public List<float> ClearDamagePerMonster;                                    // 0x0018(0x0010) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance)
         public List<float> ClearDamagePerBoss;                                       // 0x0028(0x0010) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance)
+    }
+
+    // ScriptStruct JackGame.JackDataTableOddEffectBattleText
+    // 0x0000 (0x0018 - 0x0018)
+    public class FJackDataTableOddEffectBattleText : FJackDataTableActionBattleText
+    {
+
     }
 
     // ScriptStruct JackGame.JackDataTableOddEffectStatus
@@ -6545,6 +6631,130 @@ namespace DQAsset
     public class FJackDataTableNativizationAssetPath : FTableRowBase
     {
         public FName                                       NativizationAsset;                                        // 0x0008(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+    }
+
+    // ScriptStruct JackAnimNodeRuntime.JackAnimDynamicsConstraintSetup
+    // 0x005C
+    public class FJackAnimDynamicsConstraintSetup : FTableRowBase
+    {
+        public EJackAnimPhysLinearConstraintType LinearXLimitType;                                         // 0x0000(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
+        public EJackAnimPhysLinearConstraintType LinearYLimitType;                                         // 0x0001(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
+        public EJackAnimPhysLinearConstraintType LinearZLimitType;                                         // 0x0002(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
+        public FVector LinearAxesMin;                                            // 0x0004(0x000C) (Edit, IsPlainOldData)
+        public FVector LinearAxesMax;                                            // 0x0010(0x000C) (Edit, IsPlainOldData)
+        public EJackAnimPhysAngularConstraintType AngularConstraintType;                                    // 0x001C(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
+        public EAnimPhysTwistAxis TwistAxis;                                                // 0x001D(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
+        public float ConeAngle;                                                // 0x0020(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
+        //public float AngularXAngle;                                            // 0x0024(0x0004) (ZeroConstructor, Deprecated, IsPlainOldData)
+        //public float AngularYAngle;                                            // 0x0028(0x0004) (ZeroConstructor, Deprecated, IsPlainOldData)
+        //public float AngularZAngle;                                            // 0x002C(0x0004) (ZeroConstructor, Deprecated, IsPlainOldData)
+        public FVector AngularLimitsMin;                                         // 0x0030(0x000C) (Edit, IsPlainOldData)
+        public FVector AngularLimitsMax;                                         // 0x003C(0x000C) (Edit, IsPlainOldData)
+        public EAnimPhysTwistAxis AngularTargetAxis;                                        // 0x0048(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
+        public FVector AngularTarget;                                            // 0x004C(0x000C) (Edit, IsPlainOldData)
+        public bool bLinearFullyLocked;                                       // 0x0058(0x0001) (ZeroConstructor, IsPlainOldData)
+    }
+
+    // ScriptStruct JackAnimNodeRuntime.JackAnimDynamicsPlanarLimit
+    // 0x0060
+    public class FJackAnimDynamicsPlanarLimit : FTableRowBase
+    {
+        public FName                                       DrivingBoneName;                                          // 0x0018(0x0008) (Edit, ZeroConstructor, IsPlainOldData)
+        public FTransform                                  PlaneTransform;                                           // 0x0020(0x0030) (Edit, IsPlainOldData)
+        public bool                                               bUseFinitePlane;                                          // 0x0050(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
+        public FVector2D                                   PlaneExtend;                                              // 0x0054(0x0008) (Edit, IsPlainOldData)
+        public bool                                               bSkipDrivingBoneValidation;                               // 0x005C(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
     };
 
+    // ScriptStruct JackAnimNodeRuntime.JackAnimDynamicsSphericalLimit
+    // 0x0038
+    public class FJackAnimDynamicsSphericalLimit : FTableRowBase
+    {
+        public FName                                       DrivingBoneName;                                          // 0x0018(0x0008) (Edit, ZeroConstructor, IsPlainOldData)
+        public FVector                                     SphereLocalOffset;                                        // 0x0020(0x000C) (Edit, IsPlainOldData)
+        public float                                              LimitRadius;                                              // 0x002C(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
+        public EJackAnimDynamicsSphericalLimitType                LimitType;                                                // 0x0030(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
+        public bool                                               bSkipDrivingBoneValidation;                               // 0x0031(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
+    };
+
+    // ScriptStruct JackAnimNodeRuntime.JackAnimDynamicsProperties
+    // 0x02C8
+    public class FJackAnimDynamicsProperties : FTableRowBase
+    {
+        public FName MasterPose;                                      // 0x0000(0x0018) UNKNOWN PROPERTY: SoftObjectProperty JackAnimNodeRuntime.JackAnimDynamicsProperties.MasterPose
+        public List<FName> ExcludeMasterPose;
+        public EJackAnimPhysSimSpaceType SimulationSpace;                                          // 0x0030(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public FName RelativeSpaceBone;                                        // 0x0038(0x0018) (Edit, BlueprintVisible)
+        public bool bChain;                                                   // 0x0050(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public FName BoundBone;                                                // 0x0058(0x0018) (Edit, BlueprintVisible)
+        public FName ChainEnd;                                                 // 0x0070(0x0018) (Edit, BlueprintVisible)
+        public FVector BoxExtents;                                               // 0x0088(0x000C) (Edit, BlueprintVisible, IsPlainOldData)
+        public FVector LocalJointOffset;                                         // 0x0094(0x000C) (Edit, BlueprintVisible, IsPlainOldData)
+        public float GravityScale;                                             // 0x00A0(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public bool bEnableWind;                                              // 0x00B0(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public float WindScale;                                                // 0x00B4(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public EJackWindEffectDecayRate WindEffectDecayRate;                                      // 0x00B8(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public bool bReverseWindEffectDecay;                                  // 0x00B9(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public float WindEffectMaxClamp;                                       // 0x00BC(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public float WindEffectThreshold;                                      // 0x00C0(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public bool bUseVehicleFakeForce;                                     // 0x00C4(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public bool bUseKeepBoneLength;                                       // 0x00C5(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public bool bOverrideLinearDamping;                                   // 0x00C6(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public float LinearDampingOverride;                                    // 0x00C8(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public bool bOverrideAngularDamping;                                  // 0x00CC(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public float AngularDampingOverride;                                   // 0x00D0(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public bool bOverrideAngularBias;                                     // 0x00D4(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public float AngularBiasOverride;                                      // 0x00D8(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public FJackAnimDynamicsConstraintSetup ConstraintSetup;                                          // 0x00E8(0x005C) (Edit, BlueprintVisible)
+
+        public bool bUsePlanarLimit;                                          // 0x0144(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public bool bUseSphericalLimits;                                      // 0x0158(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+
+        // TODO: only one of these lists should be active, with 4-byte filler if none are
+        [Serializer(OnlyIfSet = "bUsePlanarLimit")]
+        public List<FJackAnimDynamicsPlanarLimit> PlanarLimits;                                             // 0x0148(0x0010) (Edit, BlueprintVisible, ZeroConstructor)
+        
+       // [Serializer(OnlyIfSet = "bUseSphericalLimits")]
+        public List<FJackAnimDynamicsSphericalLimit> SphericalLimits;                                          // 0x0160(0x0010) (Edit, BlueprintVisible, ZeroConstructor)
+
+        public EAnimPhysCollisionType CollisionType;                                            // 0x0170(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
+        public float SphereCollisionRadius;                                    // 0x0174(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
+        public FVector ExternalForce;                                            // 0x0178(0x000C) (Edit, IsPlainOldData)
+        public bool bUseBoneSpaceGravityMode;                                 // 0x0184(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
+        public FVector BoneSpaceGravityDirection;                                // 0x0188(0x000C) (Edit, IsPlainOldData)
+        public bool bUseConvertVelocityToExternalForce;                       // 0x0194(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
+        public float VelocityMulRatio;                                         // 0x0198(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
+        public FVector MinClampVelocity;                                         // 0x019C(0x000C) (Edit, IsPlainOldData)
+        public FVector MaxClampVelocity;                                         // 0x01A8(0x000C) (Edit, IsPlainOldData)
+        public EJackAnimPhysSimSpaceType ExternalForceSpace;                                       // 0x01B4(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
+        public FName ExternalForceRelativeBone;                                // 0x01B8(0x0018) (Edit)
+        public FName ModifyGroupName;                                          // 0x01D8(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+    };
+
+    // ScriptStruct JackAnimNodeRuntime.JackDataTableAnimDynamicsTableProperties
+    // 0x02E8 (0x02F0 - 0x0008)
+    [Serializer(NoStructSize = true)]
+    public class FJackDataTableAnimDynamicsTableProperties : FTableRowBase
+    {
+        public FName BoundBoneName;                                            // 0x0008(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public FName ChainEndName;                                             // 0x0010(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public FName RelativeBoneName;                                         // 0x0018(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public FName ExternalForceRelativeBoneName;                            // 0x0020(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public FJackAnimDynamicsProperties AnimDynamicsSettings;                                     // 0x0028(0x02C8) (Edit, BlueprintVisible)
+    }
+
+    // ScriptStruct JackAnimNodeRuntime.JackDataTableAnimExp_DynamicBoneStateDef
+    // 0x0040 (0x0048 - 0x0008)
+    [Serializer(NoStructSize = true)]
+    public class FJackDataTableAnimExp_DynamicBoneStateDef : FTableRowBase
+    {
+        public FName IncludeBoneName;                                          // 0x0008(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public FName ExcludeBoneName;                                          // 0x0010(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public FName MasterPose;                                      // 0x0018(0x0018) UNKNOWN PROPERTY: SoftObjectProperty JackAnimNodeRuntime.JackDataTableAnimExp_DynamicBoneStateDef.MasterPose
+        public List<FName> ExcludeMasterPose;                                      // 0x0030(0x0010) UNKNOWN PROPERTY: ArrayProperty JackAnimNodeRuntime.JackDataTableAnimExp_DynamicBoneStateDef.ExcludeMasterPose
+        public EJackUpperDynamicBoneState UpperState;                                               // 0x0040(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public EJackLowerDynamicBoneState LowerState;                                               // 0x0041(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public EJackHairDynamicBoneState HairState;                                                // 0x0042(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public EJackMantleDynamicBoneState MantleState;                                              // 0x0043(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+    }
 }

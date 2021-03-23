@@ -30,4 +30,23 @@ namespace DQAsset
         public float B;
         public float A;
     }
+
+    // ScriptStruct CoreUObject.Quat
+    // 0x0010
+    public class FQuat : FTableRowBase
+    {
+        public float X;                                                        // 0x0000(0x0004) (Edit, BlueprintVisi, ZeroConstructor, SaveGame, IsPlainOldData)
+        public float Y;                                                        // 0x0004(0x0004) (Edit, BlueprintVisi, ZeroConstructor, SaveGame, IsPlainOldData)
+        public float Z;                                                        // 0x0008(0x0004) (Edit, BlueprintVisi, ZeroConstructor, SaveGame, IsPlainOldData)
+        public float W;                                                        // 0x000C(0x0004) (Edit, BlueprintVisi, ZeroConstructor, SaveGame, IsPlainOldData)
+    }
+
+    // ScriptStruct CoreUObject.Transform
+    // 0x0030
+    public class FTransform : FTableRowBase
+    {
+        public FQuat Rotation;                                                 // 0x0000(0x0010) (Edit, BlueprintVisi, SaveGame, IsPlainOldData)
+        public FVector Translation;                                              // 0x0010(0x000C) (Edit, BlueprintVisi, SaveGame, IsPlainOldData)
+        public FVector Scale3D;                                                  // 0x0020(0x000C) (Edit, BlueprintVisi, SaveGame, IsPlainOldData)
+    }
 }

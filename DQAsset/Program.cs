@@ -139,19 +139,14 @@ namespace DQAsset
             "DT_DebugNpcClassCoordinate.uasset",
             "DT_DebugNpcSpawnTable.uasset",
             "DT_NavBuild.uasset",
-            "DT_GameFlagDataCutScene.uasset", // requires JackDataTableGameFlagCutScene, not in DQXIS?
-            "DT_GameFlagDataScenario.uasset", // requires JackDataTableGameFlagDataScenario, not in DQXIS?
             "DT_NativizationAsset.uasset", // requires UObject struct?!
             "DT_NativizationAssetPath.uasset", // weird struct includes new bytes at random?
-            "DT_ItemTable_ArticleInfo.uasset", // requires JackDataTableItemArticleInfo struct
-            "DT_MonsterDeploy_D01.uasset", // requires JackDataTableMonsterDeploySerialize
-            "DT_OddEffectBattleText.uasset", // JackDataTableOddEffectBattleText
-            "DT_OverrideText.uasset", // JackDataTableOverrideText
-            "DT_TextDataFukidasi.uasset", // JackDataTableFukidasi
             "DT_BattleAutoCameraCollision.uasset", // UDS
-            "DT_AnimDynamics_M004.uasset", // JackDataTableAnimDynamicsTableProperties
-            "DT_G377E005.uasset", //JackDataTableAnimDynamicsTableProperties
-            "DT_DynamicBoneState_Hair.uasset", // JackDataTableAnimExp_DynamicBoneStateDef
+
+            // mostly fixed, might have issues if they use bUsePlanarLimit
+            //"DT_AnimDynamics_M004.uasset", // JackDataTableAnimDynamicsTableProperties
+            //"DT_G377E005.uasset", //JackDataTableAnimDynamicsTableProperties
+
             "DT_PokerItem_.uasset" // UDS
         };
 
@@ -162,13 +157,7 @@ namespace DQAsset
             {
                 var fname = Path.GetFileName(asset);
                 if (FileBlackList.Contains(fname) ||
-                    fname.StartsWith("DT_MonsterDeploy_") ||
-                    fname.StartsWith("DT_AnimDynamics_") ||
-                    fname.StartsWith("DT_PokerItem_") ||
-                    asset.Contains(@"\DataTables\Vehicle\Dynamics\") || // see DT_G377E005.uasset
-                    asset.Contains(@"\DataTables\Character\Dynamics\AnimDynamics\") || // see DT_G377E005.uasset
-                    asset.Contains(@"\DataTables\Character\Dynamics\BoneControl\") || // see DT_DynamicBoneState_Hair.uasset
-                    asset.Contains(@"\DataTables\Character\Dynamics\AnimExpression\")) // JackDataTableAnimExp_AverageRot
+                    fname.StartsWith("DT_PokerItem_"))
 
                 {
                     Console.WriteLine("blacklisted: " + asset);

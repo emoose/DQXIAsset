@@ -779,7 +779,7 @@ namespace DQAsset
         public static readonly Dictionary<string, Type> KnownTypes = Assembly.GetExecutingAssembly()
                 .GetTypes()
                 //.Where(t => t.GetInterfaces().Contains(typeof(ISerializable)))
-                .Where(t => t.BaseType == typeof(FTableRowBase))
+                .Where(t => t.BaseType == typeof(FTableRowBase) || (t.BaseType != null && t.BaseType.BaseType == typeof(FTableRowBase)))
                 .ToDictionary(t => t.Name);
 
         public PackageFileSummary Header;

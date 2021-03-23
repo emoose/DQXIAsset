@@ -381,10 +381,10 @@ namespace DQAsset
     [Serializer(NoStructSize = true)]
     public class JackDataTableParameter : FTableRowBase
     {
-	    public float                                              X;                                                        // 0x0008(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              X;                                                        // 0x0008(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public float Y;                                                        // 0x000C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
         public float Z;                                                        // 0x0010(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	    public FName                                       Text;                                                     // 0x0018(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       Text;                                                     // 0x0018(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
     }
 
     public enum EJackMeosiSlotScenarioActNo : byte
@@ -676,23 +676,164 @@ namespace DQAsset
         EJackMeosiSlotScenarioSPTraining__Training_True = 1
     }
 
-    class JackDataTableMeosiSlotScenarioPatternBlock : FTableRowBase
+    public class JackDataTableMeosiSlotScenarioPatternBlock : FTableRowBase
     {
-	    public EJackMeosiSlotScenarioActNo           ActNo;                                                    // 0x0008(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	    public int                                                GameNum;                                                  // 0x000C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	    public EJackMeosiSlotScenarioHint            Hint;                                                     // 0x0010(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	    public EJackMeosiSlotScenarioStage           Stage;                                                    // 0x0011(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	    public EJackMeosiSlotScenarioSPTraining      Training;                                                 // 0x0012(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	}
-
-    class JackDataTableMeosiSlotScenarioPattern : FTableRowBase
-    {
-	    public int                                                Route;                                                    // 0x0008(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	    public int                                                Group;                                                    // 0x000C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	    public int                                                Ratio;                                                    // 0x0010(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	    public int                                                OrderInPattern;                                           // 0x0014(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	    public int                                                OrderInGroup;                                             // 0x0018(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	    public List<bool>                                       HandTorFArray;                                            // 0x0020(0x0010) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance)
-	    public List<JackDataTableMeosiSlotScenarioPatternBlock> ActStructArray;                                           // 0x0030(0x0010) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance)
+        public EJackMeosiSlotScenarioActNo           ActNo;                                                    // 0x0008(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                GameNum;                                                  // 0x000C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public EJackMeosiSlotScenarioHint            Hint;                                                     // 0x0010(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public EJackMeosiSlotScenarioStage           Stage;                                                    // 0x0011(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public EJackMeosiSlotScenarioSPTraining      Training;                                                 // 0x0012(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
     }
+
+    public class JackDataTableMeosiSlotScenarioPattern : FTableRowBase
+    {
+        public int                                                Route;                                                    // 0x0008(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                Group;                                                    // 0x000C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                Ratio;                                                    // 0x0010(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                OrderInPattern;                                           // 0x0014(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                OrderInGroup;                                             // 0x0018(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public List<bool>                                       HandTorFArray;                                            // 0x0020(0x0010) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance)
+        public List<JackDataTableMeosiSlotScenarioPatternBlock> ActStructArray;                                           // 0x0030(0x0010) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance)
+    }
+
+    public enum EJackItemGetIcon : byte
+    {
+        EJackItemGetIcon__Item = 0,
+        EJackItemGetIcon__Gold = 1,
+        EJackItemGetIcon__CasinoCoin = 2,
+        EJackItemGetIcon__TiisanaMedal = 3,
+        EJackItemGetIcon__Houzyu = 4,
+    }
+
+    public enum EJackItem_ParameterType : byte
+    {
+        EJackItem_ParameterType__Unknown = 0,
+        EJackItem_ParameterType__Kougekiryoku = 1,
+        EJackItem_ParameterType__Syubiryoku = 2,
+        EJackItem_ParameterType__MPKyuuSyuuRate = 3,
+        EJackItem_ParameterType__TateGuardRate = 4,
+        EJackItem_ParameterType__MikawasiRate = 5,
+        EJackItem_ParameterType__CriticalRate = 6,
+        EJackItem_ParameterType__ZoneOnRate = 7,
+        EJackItem_ParameterType__Kiyousa = 8,
+        EJackItem_ParameterType__Subayasa = 9,
+        EJackItem_ParameterType__KougekiMaryoku = 10,
+        EJackItem_ParameterType__KaifukuMaryoku = 11,
+        EJackItem_ParameterType__MaxHP = 12,
+        EJackItem_ParameterType__MaxMP = 13,
+        EJackItem_ParameterType__Miryoku = 14,
+        EJackItem_ParameterType__BukiGuardRate = 15,
+        EJackItem_ParameterType__Tikara = 16,
+        EJackItem_ParameterType__Minomamori = 17,
+    }
+
+    public enum EJackItem_SellType : byte
+    {
+        EJackItem_SellType__Unknown = 0,
+        EJackItem_SellType__NG = 1,
+        EJackItem_SellType__OK = 2,
+        EJackItem_SellType__NeedConfirmation1 = 3,
+        EJackItem_SellType__NeedConfirmation2 = 4,
+    }
+
+    public enum EJackItem_DiscardType : byte
+    {
+        EJackItem_DiscardType__Unknown = 0,
+        EJackItem_DiscardType__NG = 1,
+        EJackItem_DiscardType__OK = 2,
+        EJackItem_DiscardType__NeedConfirmation1 = 3,
+        EJackItem_DiscardType__NeedConfirmation2 = 4,
+    }
+
+    public enum EJackItem_EquipmentSE : byte
+    {
+        EJackItem_EquipmentSE__Unknown = 0,
+        EJackItem_EquipmentSE__Mute = 1,
+        EJackItem_EquipmentSE__Default = 2,
+        EJackItem_EquipmentSE__Metal = 3,
+        EJackItem_EquipmentSE__Cloth = 4,
+    }
+
+    public class JackDataTableItem : FTableRowBase
+    {
+        public FName                                       ItemNameID;                                               // 0x0008(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                SortNo;                                                   // 0x0010(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                StrengthNo;                                               // 0x0014(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                PhoneticNo;                                               // 0x0018(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                PictorialBookNo;                                          // 0x001C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                LapNo;                                                    // 0x0020(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        //public byte                                      UnknownData00[0x4];                                       // 0x0024(0x0004) MISSED OFFSET
+        public FName                                       ClassificationID;                                         // 0x0028(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       RecipeBookID;                                             // 0x0030(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                Rarity;                                                   // 0x0038(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                PlusValue;                                                // 0x003C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                Price_Buying;                                             // 0x0040(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                Price_Selling;                                            // 0x0044(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public string                                     GetMEType;                                                // 0x0048(0x0010) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance)
+        public FName                                       GetSEID;                                                  // 0x0058(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public EJackItemGetIcon                      GetIconType;                                              // 0x0060(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        //public byte                                      UnknownData01[0x7];                                       // 0x0061(0x0007) MISSED OFFSET
+        public FName                                       UnitNameID;                                               // 0x0068(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       DescriptionID;                                            // 0x0070(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       SpecificAbilityDescriptionID;                             // 0x0078(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       UsingActionID;                                            // 0x0080(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       UsingEvent;                                               // 0x0088(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       UsingEventParameter;                                      // 0x0090(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                ParameterCorrection_Kougekiryoku;                         // 0x0098(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                ParameterCorrection_Syubiryoku;                           // 0x009C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ParameterCorrection_MPKyuuSyuuRate;                       // 0x00A0(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ParameterCorrection_BukiGuardRate;                        // 0x00A4(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ParameterCorrection_TateGuardRate;                        // 0x00A8(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ParameterCorrection_MikawasiRate;                         // 0x00AC(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ParameterCorrection_CriticalRate;                         // 0x00B0(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public float                                              ParameterCorrection_ZoneOnRate;                           // 0x00B4(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                ParameterCorrection_Tikara;                               // 0x00B8(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                ParameterCorrection_Minomamori;                           // 0x00BC(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                ParameterCorrection_Kiyousa;                              // 0x00C0(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                ParameterCorrection_Subayasa;                             // 0x00C4(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                ParameterCorrection_KougekiMaryoku;                       // 0x00C8(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                ParameterCorrection_KaifukuMaryoku;                       // 0x00CC(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                ParameterCorrection_MaxHP;                                // 0x00D0(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                ParameterCorrection_MaxMP;                                // 0x00D4(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public int                                                ParameterCorrection_Miryoku;                              // 0x00D8(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public EJackItem_ParameterType               MajorParameter1;                                          // 0x00DC(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public EJackItem_ParameterType               MajorParameter2;                                          // 0x00DD(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public EJackItem_ParameterType               MajorParameter3;                                          // 0x00DE(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public EJackItem_ParameterType               MajorParameter4;                                          // 0x00DF(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       OddEffectID_01;                                           // 0x00E0(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       OddEffectID_02;                                           // 0x00E8(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       OddEffectID_03;                                           // 0x00F0(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName                                       OddEffectID_04;                                           // 0x00F8(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bEquipmentPossible_P001;                                  // 0x0100(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bEquipmentPossible_P002;                                  // 0x0101(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bEquipmentPossible_P003;                                  // 0x0102(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bEquipmentPossible_P004_2;                                // 0x0103(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bEquipmentPossible_P004_3;                                // 0x0104(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bEquipmentPossible_P005;                                  // 0x0105(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bEquipmentPossible_P006;                                  // 0x0106(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bEquipmentPossible_P007;                                  // 0x0107(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bEquipmentPossible_P008;                                  // 0x0108(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        //public byte                                      UnknownData02[0x3];                                       // 0x0109(0x0003) MISSED OFFSET
+        public int                                                EquipmentLevel;                                           // 0x010C(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bCanConsume;                                              // 0x0110(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bCanBuy;                                                  // 0x0111(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public EJackItem_SellType                    SellType;                                                 // 0x0112(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public EJackItem_DiscardType                 DiscardType;                                              // 0x0113(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bLeaveAtSort;                                             // 0x0114(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public bool                                               bStoreCommonBag;                                          // 0x0115(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        //public byte                                      UnknownData03[0x2];                                       // 0x0116(0x0002) MISSED OFFSET
+        public int                                                LimitedNumber;                                            // 0x0118(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        //public byte                                      UnknownData04[0x4];                                       // 0x011C(0x0004) MISSED OFFSET
+        public FName                                      MenuIconTexture;                                      // 0x011C(0x0018) UNKNOWN PROPERTY: SoftObjectProperty JackGame.JackDataTableItem.MenuIconTexture
+        public FName                                      PictureBookIconTexture;                                      // 0x0138(0x0018) UNKNOWN PROPERTY: SoftObjectProperty JackGame.JackDataTableItem.PictureBookIconTexture
+        public FName                                      PopIconTexture;                                      // 0x0150(0x0018) UNKNOWN PROPERTY: SoftObjectProperty JackGame.JackDataTableItem.PopIconTexture
+        public FName                                      EquipmentStaticMesh_Main;                                      // 0x0168(0x0018) UNKNOWN PROPERTY: SoftObjectProperty JackGame.JackDataTableItem.EquipmentStaticMesh_Main
+        public FName                                      EquipmentStaticMesh_Main_L;                                      // 0x0180(0x0018) UNKNOWN PROPERTY: SoftObjectProperty JackGame.JackDataTableItem.EquipmentStaticMesh_Main_L
+        public FName                                      EquipmentStaticMesh_Sub;                                      // 0x0198(0x0018) UNKNOWN PROPERTY: SoftObjectProperty JackGame.JackDataTableItem.EquipmentStaticMesh_Sub
+        public FName                                      EquipmentSkeletalMesh_Main;                                      // 0x01B0(0x0018) UNKNOWN PROPERTY: SoftObjectProperty JackGame.JackDataTableItem.EquipmentSkeletalMesh_Main
+        public FName                                      EquipmentSkeletalMesh_Sub;                                      // 0x01C8(0x0018) UNKNOWN PROPERTY: SoftObjectProperty JackGame.JackDataTableItem.EquipmentSkeletalMesh_Sub
+        public EJackItem_EquipmentSE                 EquipmentSE;                                              // 0x01E0(0x0001) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        //public byte                                      UnknownData13[0x3];                                       // 0x01E1(0x0003) MISSED OFFSET
+        public int                                                TripleItemNo;                                             // 0x01E4(0x0004) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+    };
 }

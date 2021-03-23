@@ -494,8 +494,11 @@ namespace DQAsset
                     {
                         int structSize = 0;
                         var settings = propertyType.GetCustomAttribute<SerializerAttribute>();
-                        if(settings == null || !settings.NoStructSize)
+                        if (settings == null || !settings.NoStructSize)
+                        {
                             structSize = reader.ReadInt32();
+                            position = reader.BaseStream.Position;
+                        }
 
                         var propData = Activator.CreateInstance(propertyType) as ISerializableText;
                         propData.Deserialize(reader, package);

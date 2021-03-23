@@ -57,10 +57,34 @@ namespace DQAsset
 
     public class FName : ISerializable
     {
-        public int Index;
-        public int InstanceNum;
+        public int Index = 0;
+        public int InstanceNum = 0;
 
         public string Value;
+
+        public FName() { }
+
+        public FName(string value)
+        {
+            Value = value;
+            TryGetInstanceNum();
+        }
+
+        void TryGetInstanceNum()
+        {
+            // Convert FName that contains InstanceNum (eg. W_WPN++2048++) into InstanceNum + Value
+            if (!Value.EndsWith("++"))
+                return;
+
+            var numEndIdx = Value.LastIndexOf("++");
+            var numStartIdx = Value.LastIndexOf("++", numEndIdx);
+            if (numStartIdx >= 0 && numEndIdx >= numStartIdx)
+            {
+                var instanceNum = Value.Substring(numStartIdx + 2, numEndIdx - (numStartIdx + 2));
+                InstanceNum = int.Parse(instanceNum);
+                Value = Value.Substring(0, numStartIdx);
+            }
+        }
 
         public void Deserialize(BinaryReader reader, PackageFile package)
         {
@@ -73,6 +97,8 @@ namespace DQAsset
 
         public void Serialize(BinaryWriter writer, PackageFile package)
         {
+            TryGetInstanceNum();
+
             Index = package.Names.FindIndex(s => s.Name == Value);
             if (Index == -1)
             {
@@ -83,13 +109,31 @@ namespace DQAsset
                 if (Index == -1)
                     throw new Exception("Failed to add new FName for some reason!");
             }
-            InstanceNum = 0;
 
             writer.Write(Index);
             writer.Write(InstanceNum);
         }
 
-        public override string ToString() => Value;
+        public override string ToString()
+        {
+            if (InstanceNum == 0)
+                return Value;
+            return $"{Value}++{InstanceNum}++";
+        }
+
+        public override bool Equals(object? other)
+        {
+            if (other == null && this == null)
+                return true;
+            if (other.GetType() != GetType())
+                return false;
+            var otherName = other as FName;
+
+            otherName.TryGetInstanceNum();
+            TryGetInstanceNum();
+
+            return otherName.Value == this.Value && otherName.InstanceNum == this.InstanceNum;
+        }
     }
 
     public class PackageIndex : ISerializable
@@ -315,7 +359,7 @@ namespace DQAsset
         public List<PropertyTag> PropertyTags;
         public List<ISerializable> Properties;
         public uint Reserved;
-        public Dictionary<string, ISerializableText> PropertiesData;
+        public Dictionary<FName, ISerializableText> PropertiesData;
 
         public string SerializeTextHeader(PackageFile package)
         {
@@ -332,7 +376,7 @@ namespace DQAsset
 
             foreach (var kvp in PropertiesData)
             {
-                retVal += kvp.Key + ",";
+                retVal += kvp.Key.ToString() + ",";
                 retVal += kvp.Value.SerializeText(package, isMainElement);
                 retVal += Environment.NewLine;
             }
@@ -366,15 +410,16 @@ namespace DQAsset
                 var key = line.Substring(0, rowNameEndIdx);
                 var value = line.Substring(rowNameEndIdx + 1);
 
+                var keyFName = new FName(key);
                 ISerializableText rowValue;
-                if (PropertiesData.ContainsKey(key))
-                    rowValue = PropertiesData[key];
+                if (PropertiesData.ContainsKey(keyFName))
+                    rowValue = PropertiesData[keyFName];
                 else
                     rowValue = Activator.CreateInstance(rowType) as ISerializableText;
 
                 rowValue.DeserializeText(value, package);
 
-                PropertiesData[key] = rowValue;
+                PropertiesData[keyFName] = rowValue;
             }
             // TODO load values from text into class
         }
@@ -407,9 +452,7 @@ namespace DQAsset
 
                 foreach (var kvp in PropertiesData)
                 {
-                    var rowName = new FName();
-                    rowName.Value = kvp.Key;
-                    rowName.Serialize(writer, package);
+                    kvp.Key.Serialize(writer, package);
 
                     bool writeStructSize = true;
                     var settings = kvp.Value.GetType().GetCustomAttribute<SerializerAttribute>();
@@ -470,7 +513,7 @@ namespace DQAsset
             // ObjectProperty data comes after the properties/propertytags section
             // I don't know if any other properties are handled this way, probably not, doing this is likely wrong for 99% of other UE4 properties
 
-            PropertiesData = new Dictionary<string, ISerializableText>();
+            PropertiesData = new Dictionary<FName, ISerializableText>();
             foreach (var prop in Properties)
             {
                 if (prop.GetType() != typeof(ObjectProperty))
@@ -510,7 +553,7 @@ namespace DQAsset
                             reader.BaseStream.Position = position + structSize;
                         }
 
-                        PropertiesData.Add(rowName.Value, propData);
+                        PropertiesData.Add(rowName, propData);
                     }
                 }
             }

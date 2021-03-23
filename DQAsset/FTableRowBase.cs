@@ -60,11 +60,10 @@ namespace DQAsset
                     foreach (var val in values)
                         list.Add(DeserializeValueText(elementType, settings, package, val));
 
+                    
                     return list;
                 case "FName":
-                    var name = new FName();
-                    name.Value = value;
-                    return name;
+                    return new FName(value);
                 default:
                     if (type.IsEnum)
                     {
@@ -134,7 +133,7 @@ namespace DQAsset
                     return result;
                 case "FName":
                     var name = (FName)value;
-                    return name.Value;
+                    return name.ToString();
                 default:
                     if (type.IsEnum)
                     {

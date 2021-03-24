@@ -34,5 +34,9 @@ namespace DQAsset
         // Only serializes/deserializes if field is set
         public string OnlyIfSet { get; set; }
         public string OnlyIfNotSet { get; set; }
+
+
+        public string[] OnlyIfAllSet { get; set; }
+        public string[] OnlyIfAllNotSet { get; set; }
     }
 }

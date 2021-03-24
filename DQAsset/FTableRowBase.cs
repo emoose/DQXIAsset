@@ -171,23 +171,12 @@ namespace DQAsset
                 if (settings != null && settings.Hidden)
                     continue;
 
-                bool shouldSerialize = true;
-
-                if (settings != null && !string.IsNullOrEmpty(settings.OnlyIfSet))
-                    if (!CheckIsSet(settings.OnlyIfSet))
-                        shouldSerialize = false;
-
-                if (settings != null && !string.IsNullOrEmpty(settings.OnlyIfNotSet))
-                    if (CheckIsSet(settings.OnlyIfNotSet))
-                        shouldSerialize = false;
-
-                var fieldType = field.FieldType.Name;
-
-                // change outer escaped-quotes to regular quotes
                 string valueText = "\"\"";
-                if (shouldSerialize)
+                if (FieldCanSerialize(field))
                 {
                     valueText = SerializeValueText(field.FieldType, settings, package, field.GetValue(this));
+
+                    // change outer escaped-quotes to regular quotes
                     if (isMainElement && valueText.StartsWith("\"\"") && valueText.EndsWith("\"\"") && valueText.Length > 4)
                         valueText = "\"" + valueText.Substring(2, valueText.Length - 4) + "\"";
                 }
@@ -220,16 +209,7 @@ namespace DQAsset
                 if (settings != null && settings.Hidden) 
                     continue;
 
-                bool shouldDeserialize = true;
-                if (settings != null && !string.IsNullOrEmpty(settings.OnlyIfSet))
-                    if (!CheckIsSet(settings.OnlyIfSet))
-                        shouldDeserialize = false;
-
-                if (settings != null && !string.IsNullOrEmpty(settings.OnlyIfNotSet))
-                    if (CheckIsSet(settings.OnlyIfNotSet))
-                        shouldDeserialize = false;
-
-                if (shouldDeserialize)
+                if (FieldCanSerialize(field))
                 {
                     object value = DeserializeValueText(field.FieldType, settings, package, values[valueIdx]);
                     field.SetValue(this, value);
@@ -477,20 +457,43 @@ namespace DQAsset
             return false;
         }
 
+        bool FieldCanSerialize(FieldInfo field)
+        {
+            var settings = field.GetCustomAttribute<SerializerAttribute>();
+
+            if (settings == null)
+                return true;
+
+            if (!string.IsNullOrEmpty(settings.OnlyIfSet))
+                if (!CheckIsSet(settings.OnlyIfSet))
+                    return false;
+
+            if (!string.IsNullOrEmpty(settings.OnlyIfNotSet))
+                if (CheckIsSet(settings.OnlyIfNotSet))
+                    return false;
+
+            if(settings.OnlyIfAllSet != null && settings.OnlyIfAllSet.Length > 0)
+                foreach (var field2 in settings.OnlyIfAllSet)
+                    if (!CheckIsSet(field2))
+                        return false;
+
+            if (settings.OnlyIfAllNotSet != null && settings.OnlyIfAllNotSet.Length > 0)
+                foreach (var field2 in settings.OnlyIfAllNotSet)
+                    if (CheckIsSet(field2))
+                        return false;
+
+            return true;
+        }
+
         public virtual void Deserialize(BinaryReader reader, PackageFile package)
         {
             var fields = GetType().GetFields().OrderBy(field => field.MetadataToken); // hack to get fields in order of declaration (todo: use something less hacky, this might break mono?)
             foreach (var field in fields)
             {
+                if (!FieldCanSerialize(field))
+                    continue;
+
                 var settings = field.GetCustomAttribute<SerializerAttribute>();
-
-                if(settings != null && !string.IsNullOrEmpty(settings.OnlyIfSet))
-                    if (!CheckIsSet(settings.OnlyIfSet))
-                        continue;
-
-                if (settings != null && !string.IsNullOrEmpty(settings.OnlyIfNotSet))
-                    if (CheckIsSet(settings.OnlyIfNotSet))
-                        continue;
 
                 var fieldType = field.FieldType.Name;
                 object value = DeserializeValue(field.FieldType, settings, reader, package);
@@ -503,15 +506,10 @@ namespace DQAsset
             var fields = GetType().GetFields().OrderBy(field => field.MetadataToken); // hack to get fields in order of declaration (todo: use something less hacky, this might break mono?)
             foreach (var field in fields)
             {
+                if (!FieldCanSerialize(field))
+                    continue;
+
                 var settings = field.GetCustomAttribute<SerializerAttribute>();
-
-                if (settings != null && !string.IsNullOrEmpty(settings.OnlyIfSet))
-                    if (!CheckIsSet(settings.OnlyIfSet))
-                        continue;
-
-                if (settings != null && !string.IsNullOrEmpty(settings.OnlyIfNotSet))
-                    if (CheckIsSet(settings.OnlyIfNotSet))
-                        continue;
 
                 var fieldType = field.FieldType.Name;
                 SerializeValue(field.FieldType, settings, writer, package, field.GetValue(this));

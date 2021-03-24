@@ -45,8 +45,16 @@ namespace DQAsset
         {
             writer.WriteFString(Name);
 
-            NonCasePreservingHash = (ushort)(Shared.UE4Strihash_DEPRECATED(Name) & 0xFFFF);
-            CasePreservingHash = (ushort)(Shared.UE4StrCrc32(Name) & 0xFFFF);
+            if(Shared.HasNonASCIIChars(Name))
+            {
+                NonCasePreservingHash = (ushort)(Shared.UE4Strihash_DEPRECATED_Wide(Name) & 0xFFFF);
+                CasePreservingHash = (ushort)(Shared.UE4StrCrc32_Wide(Name) & 0xFFFF);
+            }
+            else
+            {
+                NonCasePreservingHash = (ushort)(Shared.UE4Strihash_DEPRECATED(Name) & 0xFFFF);
+                CasePreservingHash = (ushort)(Shared.UE4StrCrc32(Name) & 0xFFFF);
+            }
 
             writer.Write(NonCasePreservingHash);
             writer.Write(CasePreservingHash);

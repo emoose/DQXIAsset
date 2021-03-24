@@ -6724,7 +6724,6 @@ namespace DQAsset
 
         public bool bUseSphericalLimits;                                      // 0x0158(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 
-        //[Serializer(OnlyIfSet = "bUseSphericalLimits")]
         public List<FJackAnimDynamicsSphericalLimit> SphericalLimits;
 
         public EAnimPhysCollisionType CollisionType;                                            // 0x0170(0x0001) (Edit, ZeroConstructor, IsPlainOldData)

@@ -190,7 +190,22 @@ namespace DQAsset
             return Hash;
         }
 
-        public static uint UE4StrCrc32(string str, uint CRC = 0)
+		public static uint UE4Strihash_DEPRECATED_Wide(string str)
+		{
+			uint Hash = 0;
+			byte[] Data = Encoding.Unicode.GetBytes(str.ToUpper());
+			for (int i = 0; i < Data.Length; i+=2)
+			{
+				byte Ch = Data[i];
+				Hash = ((Hash >> 8) & 0x00FFFFFF) ^ CRCTable_DEPRECATED[(Hash ^ Ch) & 0x000000FF];
+				Ch = Data[i + 1];
+				Hash = ((Hash >> 8) & 0x00FFFFFF) ^ CRCTable_DEPRECATED[(Hash ^ Ch) & 0x000000FF];
+			}
+			return Hash;
+		}
+
+
+		public static uint UE4StrCrc32(string str, uint CRC = 0)
         {
             CRC = ~CRC;
             byte[] Data = Encoding.UTF8.GetBytes(str);
@@ -206,12 +221,50 @@ namespace DQAsset
                 CRC = (CRC >> 8) ^ CRCTablesSB8[0][(CRC ^ Ch) & 0xFF];
             }
             return ~CRC;
-        }
+		}
 
-        public static void WriteFString(this BinaryWriter writer, string val)
+		public static uint UE4StrCrc32_Wide(string str, uint CRC = 0)
+		{
+			CRC = ~CRC;
+			byte[] Data = Encoding.Unicode.GetBytes(str);
+			for (int i = 0; i < Data.Length; i+=2)
+			{
+				ushort Ch = (ushort)((Data[i+1] << 8) | Data[i]);
+				CRC = (CRC >> 8) ^ CRCTablesSB8[0][(CRC ^ Ch) & 0xFF];
+				Ch >>= 8;
+				CRC = (CRC >> 8) ^ CRCTablesSB8[0][(CRC ^ Ch) & 0xFF];
+				Ch >>= 8;
+				CRC = (CRC >> 8) ^ CRCTablesSB8[0][(CRC ^ Ch) & 0xFF];
+				Ch >>= 8;
+				CRC = (CRC >> 8) ^ CRCTablesSB8[0][(CRC ^ Ch) & 0xFF];
+			}
+			return ~CRC;
+		}
+
+		public static bool HasNonASCIIChars(string str)
+		{
+			return (Encoding.UTF8.GetByteCount(str) != str.Length);
+		}
+
+		public static void WriteFString(this BinaryWriter writer, string val)
         {
-            var data = Encoding.UTF8.GetBytes(val);
-			var length = data.Length + 1;
+			byte[] data;
+			bool unicode = HasNonASCIIChars(val);
+			int length = 0;
+			if (unicode)
+			{
+				data = Encoding.Unicode.GetBytes(val);
+				length = (data.Length / 2);
+			}
+			else
+			{
+				data = Encoding.UTF8.GetBytes(val);
+				length = data.Length;
+			}
+			length++;
+			if (unicode)
+				length = -length;
+
 			if (data.Length == 0)
 				length = 0;
 
@@ -219,7 +272,12 @@ namespace DQAsset
             writer.Write(data);
 
 			if (data.Length > 0)
-				writer.Write((byte)0);
+            {
+				if (unicode)
+					writer.Write((short)0);
+				else
+					writer.Write((byte)0);
+            }
         }
 
         public static string ReadFString(this BinaryReader reader)

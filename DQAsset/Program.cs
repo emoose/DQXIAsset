@@ -15,7 +15,6 @@ namespace DQAsset
         static List<string> FileBlackList = new List<string>()
         {
             // most of these seem to use UserDefinedStructs (UDS), not sure how to handle those yet
-            "DT_CharaLookByMaps.uasset",
             "DT_Coordinate.uasset", // strange file
             "DT_Crowd_SetList.uasset",
             "DT_DebugAutoPlay.uasset",

@@ -6882,4 +6882,30 @@ namespace DQAsset
         public float LerpRatio;                                                // 0x0068(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public EBoneControlSpace CalcSpace;                                                // 0x006C(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)*/
     }
+
+    [Serializer(NoStructSize = true)]
+    public class FSTRUCT_DT_CharaLookByMaps : FTableRowBase
+    {
+        // These should probably get read in AbstractExportObject...
+        // Shouldn't be any harm reading them here though, as long as fields don't change at all
+        public FName PropertyName0;
+        public FName PropertyType0;
+        public FName PropertyFinal0;
+        public byte Unk0;
+        public float BaseColorScale;
+
+        public FName PropertyName1;
+        public FName PropertyType1;
+        public FName PropertyFinal1;
+        public byte Unk1;
+        public float BaseColorSaturation;
+
+        public FName PropertyName2;
+        public FName PropertyType2;
+        public FName PropertyFinal2;
+        public byte Unk2;
+        public float AOScale;
+
+        public FName PropertyName3;
+    }
 }

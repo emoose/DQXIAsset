@@ -139,19 +139,13 @@ namespace DQAsset
             "DT_DebugNpcClassCoordinate.uasset",
             "DT_DebugNpcSpawnTable.uasset",
             "DT_NavBuild.uasset",
-            //"DT_NativizationAsset.uasset", // requires UObject struct?!
-            //"DT_NativizationAssetPath.uasset", // weird struct includes new bytes at random?
             "DT_BattleAutoCameraCollision.uasset", // UDS STRUCT_DT_AutoCameraCollision
-
-            // mostly fixed, might have issues if they use bUsePlanarLimit
-            //"DT_AnimDynamics_M004.uasset", // JackDataTableAnimDynamicsTableProperties
-            //"DT_G377E005.uasset", //JackDataTableAnimDynamicsTableProperties
-
-            "DT_PokerItem_.uasset" // UDS
+            "DT_PokerItem_.uasset", // UDS
         };
 
         static void BatchFolder(string folderPath)
         {
+           // BatchMode = true;
             var assets = Directory.GetFiles(folderPath, "*.uasset", SearchOption.AllDirectories);
             foreach (var asset in assets)
             {

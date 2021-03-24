@@ -6720,15 +6720,12 @@ namespace DQAsset
         public float AngularBiasOverride;                                      // 0x00D8(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
         public FJackAnimDynamicsConstraintSetup ConstraintSetup;                                          // 0x00E8(0x005C) (Edit, BlueprintVisible)
 
-        public bool bUsePlanarLimit;                                          // 0x0144(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+        public List<FJackAnimDynamicsPlanarLimit> PlanarLimit;                                             // 0x0148(0x0010) (Edit, BlueprintVisible, ZeroConstructor)
+
         public bool bUseSphericalLimits;                                      // 0x0158(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 
-        // TODO: only one of these lists should be active, with 4-byte filler if none are
-        [Serializer(OnlyIfSet = "bUsePlanarLimit")]
-        public List<FJackAnimDynamicsPlanarLimit> PlanarLimits;                                             // 0x0148(0x0010) (Edit, BlueprintVisible, ZeroConstructor)
-        
-       // [Serializer(OnlyIfSet = "bUseSphericalLimits")]
-        public List<FJackAnimDynamicsSphericalLimit> SphericalLimits;                                          // 0x0160(0x0010) (Edit, BlueprintVisible, ZeroConstructor)
+        //[Serializer(OnlyIfSet = "bUseSphericalLimits")]
+        public List<FJackAnimDynamicsSphericalLimit> SphericalLimits;
 
         public EAnimPhysCollisionType CollisionType;                                            // 0x0170(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
         public float SphereCollisionRadius;                                    // 0x0174(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
@@ -6769,5 +6766,121 @@ namespace DQAsset
         public EJackLowerDynamicBoneState LowerState;                                               // 0x0041(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public EJackHairDynamicBoneState HairState;                                                // 0x0042(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
         public EJackMantleDynamicBoneState MantleState;                                              // 0x0043(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+    }
+
+    // ScriptStruct JackAnimNodeRuntime.JackAnimExp_BaseProperties
+    // 0x0030
+    public class FJackAnimExp_BaseProperties : FTableRowBase
+    {
+        public FName TargetBone;                                               // 0x0000(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public FName BoneA;                                                    // 0x0008(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public FName BoneB;                                                    // 0x0010(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public FName RelatedBoneName;                                          // 0x0018(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public FVector MulRatio;                                                 // 0x0020(0x000C) (Edit, BlueprintVisi, IsPlainOldData)
+    }
+
+    // ScriptStruct JackAnimNodeRuntime.JackAnimExpNodeProps_CollideSkirtMode
+    // 0x0020
+    public class FJackAnimExpNodeProps_CollideSkirtMode : FTableRowBase
+    {
+        public FName UpLegBone;                                                // 0x0000(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public FName LegBone;                                                  // 0x0008(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public float MarginRate;                                               // 0x0010(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public float ExpValue;                                                 // 0x0014(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public EEasingFunc EasingFunc;                                               // 0x0018(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+    }
+
+    // ScriptStruct JackAnimNodeRuntime.JackAnimExpNodeProps_FixRefPoseClamp
+    // 0x0003
+    public class FJackAnimExpNodeProps_FixRefPoseClamp : FTableRowBase
+    {
+        public bool bFixX;                                                    // 0x0000(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public bool bFixY;                                                    // 0x0001(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public bool bFixZ;                                                    // 0x0002(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+    }
+
+
+    // ScriptStruct JackAnimNodeRuntime.JackDataTableAnimExp_WindRandomizePreset
+    // 0x0028 (0x0030 - 0x0008)
+    [Serializer(NoStructSize = true)]
+    public class FJackDataTableAnimExp_WindRandomizePreset : FTableRowBase
+    {
+        public float BaseWindSpeed;                                            // 0x0008(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public float WindDirectionRandomConeHalfAngleRange;                    // 0x000C(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public float MinRandomizeMulRatio;                                     // 0x0010(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public float MaxRandomizeMulRatio;                                     // 0x0014(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public float MinRandomEffectInterval;                                  // 0x0018(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public float MaxRandomEffectInterval;                                  // 0x001C(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+    }
+
+    // ScriptStruct JackAnimNodeRuntime.JackDataTableAnimExp_AverageRot
+    // 0x0080 (0x0088 - 0x0008).
+    [Serializer(NoStructSize = true)]
+    public class FJackDataTableAnimExp_AverageRot : FTableRowBase
+    {
+        public FJackAnimExp_BaseProperties BaseProperties;                                           // 0x0008(0x0030) (Edit, BlueprintVisi)
+        public bool bCopyBoneARot;                                            // 0x0038(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public bool bUseCollideSkirtMode;                                     // 0x0039(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public FJackAnimExpNodeProps_CollideSkirtMode CollideSkirtModeProps;                                    // 0x0040(0x0020) (Edit, BlueprintVisi)
+        public bool bClampRot;                                                // 0x0060(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public bool bFixRefPoseClamp;                                         // 0x0061(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public FJackAnimExpNodeProps_FixRefPoseClamp FixAxis;                                                  // 0x0062(0x0003) (Edit, BlueprintVisi)
+        public FVector ClampValueMin;                                            // 0x0068(0x000C) (Edit, BlueprintVisi, IsPlainOldData)
+        public FVector ClampValueMax;                                            // 0x0074(0x000C) (Edit, BlueprintVisi, IsPlainOldData)
+        public EBoneControlSpace CalcSpace;                                                // 0x0080(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+    }
+
+    // ScriptStruct JackAnimNodeRuntime.JackDataTableAnimExp_Lerp2BonesAndClamp
+    // 0x0050 (0x0058 - 0x0008)
+    [Serializer(NoStructSize = true)]
+    public class FJackDataTableAnimExp_Lerp2BonesAndClamp : FTableRowBase
+    {
+        public FJackAnimExp_BaseProperties BaseProperties;                                           // 0x0008(0x0030) (Edit, BlueprintVisi)
+        public FVector MinRot;                                                   // 0x0038(0x000C) (Edit, BlueprintVisi, IsPlainOldData)
+        public FVector MaxRot;                                                   // 0x0044(0x000C) (Edit, BlueprintVisi, IsPlainOldData)
+        public float LerpAlpha;                                                // 0x0050(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public EBoneControlSpace CalcSpace;                                                // 0x0054(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+    }
+
+    // ScriptStruct JackAnimNodeRuntime.JackDataTableAnimExp_MaxOrMinRot
+    // 0x0038 (0x0040 - 0x0008)
+    [Serializer(NoStructSize = true)]
+    public class FJackDataTableAnimExp_MaxOrMinRot : FTableRowBase
+    {
+        public FJackAnimExp_BaseProperties BaseProperties;                                           // 0x0008(0x0030) (Edit, BlueprintVisi)
+        public bool bPositiveRangeClamp;                                      // 0x0038(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public EJackBoneAxis ClampTargetAxis;                                          // 0x0039(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public bool bExceptionClamp;                                          // 0x003A(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public EBoneControlSpace CalcSpace;                                                // 0x003B(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+    }
+
+    // ScriptStruct JackAnimNodeRuntime.JackDataTableAnimExp_RotCancel
+    // 0x0028 (0x0030 - 0x0008)
+    [Serializer(NoStructSize = true)]
+    public class FJackDataTableAnimExp_RotCancel : FTableRowBase
+    {
+        public FName TargetBone;                                               // 0x0008(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public FName RelatedBoneName;                                          // 0x0010(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public FName SynchroCancelBoneName;                                    // 0x0018(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public FVector Ratio;                                                    // 0x0020(0x000C) (Edit, BlueprintVisi, IsPlainOldData)
+        public EBoneControlSpace CalcSpace;                                                // 0x002C(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+    }
+
+    // ScriptStruct JackAnimNodeRuntime.JackDataTableAnimExp_TransSyncRot
+    // 0x0068 (0x0070 - 0x0008)
+    [Serializer(NoStructSize = true)]
+    public class FJackDataTableAnimExp_TransSyncRot : FTableRowBase
+    {
+        public FJackAnimExp_BaseProperties BaseProperties;                                           // 0x0008(0x0030) (Edit, BlueprintVisi)
+        public bool bUseTransSync2BoneRotDelta;                               // 0x0038(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public EJackBoneAxis RotAxis;                                                  // 0x0039(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        
+        /*public FVector OffsetLocation;                                           // 0x003C(0x000C) (Edit, BlueprintVisi, IsPlainOldData)
+        public FVector2D ClampSinMinMax;                                           // 0x0048(0x0008) (Edit, BlueprintVisi, IsPlainOldData)
+        public FName SyncBoneName;                                             // 0x0050(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public FName RefPoseParentBoneName;                                    // 0x0058(0x0008) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public float BaseLength;                                               // 0x0060(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public float LerpRatio;                                                // 0x0068(0x0004) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)
+        public EBoneControlSpace CalcSpace;                                                // 0x006C(0x0001) (Edit, BlueprintVisi, ZeroConstructor, IsPlainOldData)*/
     }
 }

@@ -6630,7 +6630,28 @@ namespace DQAsset
     [Serializer(NoStructSize = true)]
     public class FJackDataTableNativizationAssetPath : FTableRowBase
     {
-        public FName                                       NativizationAsset;                                        // 0x0008(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        // TODO: doesn't seem to follow FJackDataTableNativizationAssetPath format at all..
+        // seems closer to FJackDataTableNativizationAsset's serialized UObject
+        public FName NativizationAsset;                                        // 0x0008(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName Unknown0x8;
+        public byte Unknown0x10;
+        public FName Unknown0x11;
+        public FName Unknown0x19;
+        public FName Unknown0x21;
+    }
+
+    // ScriptStruct JackGame.JackDataTableNativizationAsset
+    // 0x0008 (0x0010 - 0x0008)
+    [Serializer(NoStructSize = true)]
+    public class FJackDataTableNativizationAsset : FTableRowBase
+    {
+        // TODO: move these to UObject class, and figure out names of them
+        public FName NativizationAsset;                                        // 0x0008(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName Unknown0x8;
+        public FName Unknown0x10;
+        public byte Unknown0x18;
+        public int ClassIndex;
+        public FName Unknown0x1D;
     }
 
     // ScriptStruct JackAnimNodeRuntime.JackAnimDynamicsConstraintSetup

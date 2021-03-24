@@ -139,9 +139,9 @@ namespace DQAsset
             "DT_DebugNpcClassCoordinate.uasset",
             "DT_DebugNpcSpawnTable.uasset",
             "DT_NavBuild.uasset",
-            "DT_NativizationAsset.uasset", // requires UObject struct?!
-            "DT_NativizationAssetPath.uasset", // weird struct includes new bytes at random?
-            "DT_BattleAutoCameraCollision.uasset", // UDS
+            //"DT_NativizationAsset.uasset", // requires UObject struct?!
+            //"DT_NativizationAssetPath.uasset", // weird struct includes new bytes at random?
+            "DT_BattleAutoCameraCollision.uasset", // UDS STRUCT_DT_AutoCameraCollision
 
             // mostly fixed, might have issues if they use bUsePlanarLimit
             //"DT_AnimDynamics_M004.uasset", // JackDataTableAnimDynamicsTableProperties

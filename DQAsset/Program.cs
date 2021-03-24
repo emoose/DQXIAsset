@@ -219,7 +219,6 @@ namespace DQAsset
                 Console.WriteLine("Note that CSV should have the original UAsset/UExp files next to it, for DQAsset to use as a base to update");
                 Console.WriteLine("Updated UAsset/UExp pair will be written to <path>_mod.uasset/uexp");
                 Console.WriteLine();
-                Console.WriteLine("(currently rows can't be removed but should be possible to add new ones - same for any FNames)");
                 return;
             }
 

@@ -3,6 +3,28 @@ using System.Collections.Generic;
 
 namespace DQAsset
 {
+    public struct GenerationInfo
+    {
+        public int ExportCount;
+        public int NameCount;
+    }
+
+    public struct EngineVersion
+    {
+        public uint Major;
+        public uint Minor;
+        public uint Patch;
+        public uint Changeset;
+    }
+
+    public struct CompressedChunk
+    {
+        public int UncompressedOffset;
+        public int UncompressedSize;
+        public int CompressedOffset;
+        public int CompressedSize;
+    }
+
     public class FVector2D : FTableRowBase
     {
         public float X;

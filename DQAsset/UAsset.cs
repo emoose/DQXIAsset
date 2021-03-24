@@ -6,26 +6,199 @@ using System.Reflection;
 
 namespace DQAsset
 {
-    public struct GenerationInfo
+    public class PackageFile
     {
-        public int ExportCount;
-        public int NameCount;
-    }
+        public static uint PACKAGE_FILE_TAG = 0x9E2A83C1;
 
-    public struct EngineVersion
-    {
-        public uint Major;
-        public uint Minor;
-        public uint Patch;
-        public uint Changeset;
-    }
+        public static readonly Dictionary<string, Type> KnownTypes = Assembly.GetExecutingAssembly()
+                .GetTypes()
+                //.Where(t => t.GetInterfaces().Contains(typeof(ISerializable)))
+                .Where(t => t.BaseType == typeof(FTableRowBase) || (t.BaseType != null && t.BaseType.BaseType == typeof(FTableRowBase)))
+                .ToDictionary(t => t.Name);
 
-    public struct CompressedChunk
-    {
-        public int UncompressedOffset;
-        public int UncompressedSize;
-        public int CompressedOffset;
-        public int CompressedSize;
+        public PackageFileSummary Header;
+        public List<NameEntry> Names;
+        public List<ObjectImport> Imports;
+        public List<ObjectExport> Exports;
+        public List<int> PreloadDependencies;
+
+        public List<AbstractExportObject> ExportObjects;
+
+        public string SerializeText()
+        {
+            var retVal = "";
+            foreach (var exp in ExportObjects)
+            {
+                retVal += exp.SerializeTextHeader(this);
+                retVal += Environment.NewLine;
+                retVal += exp.SerializeText(this, true);
+            }
+            return retVal;
+        }
+
+        public void DeserializeText(string text)
+        {
+            var lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var exp in ExportObjects)
+            {
+                // Remove any TextHeader lines from the input text
+                var textHeader = exp.SerializeTextHeader(this);
+                var newText = "";
+                bool skipFirstLine = true;
+                foreach (var line in lines)
+                {
+                    if (line == textHeader || skipFirstLine)
+                    {
+                        skipFirstLine = false;
+                        continue; // skip csv header
+                    }
+                    newText += line + Environment.NewLine;
+                }
+                exp.DeserializeText(newText, this);
+            }
+        }
+
+        public void Serialize(BinaryWriter uexp, BinaryWriter uasset)
+        {
+            // Clearing Names would force all FNames to readd themselves, easy way to remove any unused names from the array
+            // We don't add Names in the same order as UE itself yet tho, so this causes the whole names section to get shuffled around from the original
+            // Maybe could be added as an optional parameter or something?
+            // Names.Clear();
+
+            // Write out export data first
+            var uexpPosition = uexp.BaseStream.Position;
+            for (int i = 0; i < Exports.Count; i++)
+            {
+                var expPosition = uexp.BaseStream.Position;
+
+                var exportHeader = Exports[i];
+                var exportData = ExportObjects[i];
+
+                exportHeader.SerialOffset = uexp.BaseStream.Position - uexpPosition;
+                exportData.Serialize(uexp, this);
+
+                exportHeader.SerialSize = uexp.BaseStream.Position - expPosition;
+            }
+            uexp.Write(PACKAGE_FILE_TAG);
+
+            // Header.Generations seems to contain NameCount/ExportCount that matches header
+            // Check if any match the existing data, and choose that as the generation to update
+            int updateGenerationIdx = -1;
+            if (Header.Generations.Count > 0)
+            {
+                for (int i = 0; i < Header.Generations.Count; i++)
+                {
+                    var gen = Header.Generations[i];
+                    if (gen.NameCount == Header.NameCount && gen.ExportCount == Header.ExportCount)
+                    {
+                        updateGenerationIdx = i;
+                        break;
+                    }
+                }
+            }
+
+            // Update header
+            Header.NameCount = Names.Count;
+            Header.ImportCount = Imports.Count;
+            Header.ExportCount = Exports.Count;
+
+            if (updateGenerationIdx >= 0)
+            {
+                var gen = Header.Generations[updateGenerationIdx];
+                gen.ExportCount = Header.ExportCount;
+                gen.NameCount = Header.NameCount;
+            }
+
+            Header.PreloadDependencyCount = PreloadDependencies.Count;
+
+            // Write header (will get rewritten later with updated offsets etc)
+            var headerPosition = uasset.BaseStream.Position;
+            Header.Serialize(uasset, this);
+
+            Header.NameOffset = (int)(uasset.BaseStream.Position - headerPosition);
+            foreach (var name in Names)
+                name.Serialize(uasset, this);
+
+            Header.ImportOffset = (int)(uasset.BaseStream.Position - headerPosition);
+            foreach (var imp in Imports)
+                imp.Serialize(uasset, this);
+
+            Header.ExportOffset = (int)(uasset.BaseStream.Position - headerPosition);
+            foreach (var exp in Exports)
+                exp.Serialize(uasset, this);
+
+            byte[] unknownAfterExportBytes = { 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+            uasset.Write(unknownAfterExportBytes);
+
+            Header.DependsOffset = (int)(uasset.BaseStream.Position - headerPosition);
+            byte[] unknownDependsBytes = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+            uasset.Write(unknownDependsBytes);
+
+            Header.PreloadDependencyOffset = (int)(uasset.BaseStream.Position - headerPosition);
+            foreach (var preloadDep in PreloadDependencies)
+                uasset.Write(preloadDep);
+
+            Header.TotalHeaderSize = (int)(uasset.BaseStream.Position - headerPosition);
+
+            // Write updated section offsets/sizes to header:
+            uasset.BaseStream.Position = headerPosition;
+            Header.Serialize(uasset, this);
+        }
+
+        public void Deserialize(BinaryReader reader)
+        {
+            Header = new PackageFileSummary();
+            Header.Deserialize(reader, this);
+
+            reader.BaseStream.Position = Header.NameOffset;
+            Names = new List<NameEntry>();
+            for (int i = 0; i < Header.NameCount; i++)
+            {
+                var entry = new NameEntry();
+                entry.Deserialize(reader, this);
+                Names.Add(entry);
+            }
+
+            reader.BaseStream.Position = Header.ImportOffset;
+            Imports = new List<ObjectImport>();
+            for (int i = 0; i < Header.ImportCount; i++)
+            {
+                var imp = new ObjectImport();
+                imp.Deserialize(reader, this);
+                Imports.Add(imp);
+            }
+
+            reader.BaseStream.Position = Header.ExportOffset;
+            Exports = new List<ObjectExport>();
+            for (int i = 0; i < Header.ExportCount; i++)
+            {
+                var exp = new ObjectExport();
+                exp.Deserialize(reader, this);
+                Exports.Add(exp);
+            }
+
+            // 8 unknown bytes after export: 02 00 00 00 00 00 00 00
+            // 8 bytes pointed to by DependsOffset: 00 00 00 00 00 00 00 00
+
+            reader.BaseStream.Position = Header.PreloadDependencyOffset;
+            PreloadDependencies = new List<int>();
+            for (int i = 0; i < Header.PreloadDependencyCount; i++)
+            {
+                PreloadDependencies.Add(reader.ReadInt32());
+            }
+
+            ExportObjects = new List<AbstractExportObject>();
+            foreach (var exp in Exports)
+            {
+                reader.BaseStream.Position = exp.SerialOffset + Header.TotalHeaderSize;
+                var export = new AbstractExportObject();
+                export.Deserialize(reader, this);
+                ExportObjects.Add(export);
+            }
+
+            if (reader.BaseStream.Position != (reader.BaseStream.Length - 4))
+                throw new Exception("Failed to fully deserialize UAsset");
+        }
     }
 
     public class NameEntry : ISerializable
@@ -779,201 +952,6 @@ namespace DQAsset
 
             PreloadDependencyCount = reader.ReadInt32();
             PreloadDependencyOffset = reader.ReadInt32();
-        }
-    }
-
-    public class PackageFile
-    {
-        public static uint PACKAGE_FILE_TAG = 0x9E2A83C1;
-
-        public static readonly Dictionary<string, Type> KnownTypes = Assembly.GetExecutingAssembly()
-                .GetTypes()
-                //.Where(t => t.GetInterfaces().Contains(typeof(ISerializable)))
-                .Where(t => t.BaseType == typeof(FTableRowBase) || (t.BaseType != null && t.BaseType.BaseType == typeof(FTableRowBase)))
-                .ToDictionary(t => t.Name);
-
-        public PackageFileSummary Header;
-        public List<NameEntry> Names;
-        public List<ObjectImport> Imports;
-        public List<ObjectExport> Exports;
-        public List<int> PreloadDependencies;
-
-        public List<AbstractExportObject> ExportObjects;
-
-        public string SerializeText()
-        {
-            var retVal = "";
-            foreach (var exp in ExportObjects)
-            {
-                retVal += exp.SerializeTextHeader(this);
-                retVal += Environment.NewLine;
-                retVal += exp.SerializeText(this, true);
-            }
-            return retVal;
-        }
-
-        public void DeserializeText(string text)
-        {
-            var lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var exp in ExportObjects)
-            {
-                // Remove any TextHeader lines from the input text
-                var textHeader = exp.SerializeTextHeader(this);
-                var newText = "";
-                bool skipFirstLine = true;
-                foreach(var line in lines)
-                {
-                    if (line == textHeader || skipFirstLine)
-                    {
-                        skipFirstLine = false;
-                        continue; // skip csv header
-                    }
-                    newText += line + Environment.NewLine;
-                }
-                exp.DeserializeText(newText, this);
-            }
-        }
-
-        public void Serialize(BinaryWriter uexp, BinaryWriter uasset)
-        {
-            // Clearing Names would force all FNames to readd themselves, easy way to remove any unused names from the array
-            // We don't add Names in the same order as UE itself yet tho, so this causes the whole names section to get shuffled around from the original
-            // Maybe could be added as an optional parameter or something?
-            // Names.Clear();
-
-            // Write out export data first
-            var uexpPosition = uexp.BaseStream.Position;
-            for (int i = 0; i < Exports.Count; i++)
-            {
-                var expPosition = uexp.BaseStream.Position;
-
-                var exportHeader = Exports[i];
-                var exportData = ExportObjects[i];
-
-                exportHeader.SerialOffset = uexp.BaseStream.Position - uexpPosition;
-                exportData.Serialize(uexp, this);
-
-                exportHeader.SerialSize = uexp.BaseStream.Position - expPosition;
-            }
-            uexp.Write(PACKAGE_FILE_TAG);
-
-            // Header.Generations seems to contain NameCount/ExportCount that matches header
-            // Check if any match the existing data, and choose that as the generation to update
-            int updateGenerationIdx = -1;
-            if(Header.Generations.Count > 0)
-            {
-                for(int i = 0; i < Header.Generations.Count; i++)
-                {
-                    var gen = Header.Generations[i];
-                    if(gen.NameCount == Header.NameCount && gen.ExportCount == Header.ExportCount)
-                    {
-                        updateGenerationIdx = i;
-                        break;
-                    }
-                }
-            }
-
-            // Update header
-            Header.NameCount = Names.Count;
-            Header.ImportCount = Imports.Count;
-            Header.ExportCount = Exports.Count;
-
-            if (updateGenerationIdx >= 0)
-            {
-                var gen = Header.Generations[updateGenerationIdx];
-                gen.ExportCount = Header.ExportCount;
-                gen.NameCount = Header.NameCount;
-            }
-
-            Header.PreloadDependencyCount = PreloadDependencies.Count;
-
-            // Write header (will get rewritten later with updated offsets etc)
-            var headerPosition = uasset.BaseStream.Position;
-            Header.Serialize(uasset, this);
-
-            Header.NameOffset = (int)(uasset.BaseStream.Position - headerPosition);
-            foreach (var name in Names)
-                name.Serialize(uasset, this);
-
-            Header.ImportOffset = (int)(uasset.BaseStream.Position - headerPosition);
-            foreach (var imp in Imports)
-                imp.Serialize(uasset, this);
-
-            Header.ExportOffset = (int)(uasset.BaseStream.Position - headerPosition);
-            foreach (var exp in Exports)
-                exp.Serialize(uasset, this);
-
-            byte[] unknownAfterExportBytes = { 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-            uasset.Write(unknownAfterExportBytes);
-
-            Header.DependsOffset = (int)(uasset.BaseStream.Position - headerPosition);
-            byte[] unknownDependsBytes = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-            uasset.Write(unknownDependsBytes);
-
-            Header.PreloadDependencyOffset = (int)(uasset.BaseStream.Position - headerPosition);
-            foreach (var preloadDep in PreloadDependencies)
-                uasset.Write(preloadDep);
-
-            Header.TotalHeaderSize = (int)(uasset.BaseStream.Position - headerPosition);
-
-            // Write updated section offsets/sizes to header:
-            uasset.BaseStream.Position = headerPosition;
-            Header.Serialize(uasset, this);
-        }
-
-        public void Deserialize(BinaryReader reader)
-        {
-            Header = new PackageFileSummary();
-            Header.Deserialize(reader, this);
-
-            reader.BaseStream.Position = Header.NameOffset;
-            Names = new List<NameEntry>();
-            for (int i = 0; i < Header.NameCount; i++)
-            {
-                var entry = new NameEntry();
-                entry.Deserialize(reader, this);
-                Names.Add(entry);
-            }
-
-            reader.BaseStream.Position = Header.ImportOffset;
-            Imports = new List<ObjectImport>();
-            for (int i = 0; i < Header.ImportCount; i++)
-            {
-                var imp = new ObjectImport();
-                imp.Deserialize(reader, this);
-                Imports.Add(imp);
-            }
-
-            reader.BaseStream.Position = Header.ExportOffset;
-            Exports = new List<ObjectExport>();
-            for (int i = 0; i < Header.ExportCount; i++)
-            {
-                var exp = new ObjectExport();
-                exp.Deserialize(reader, this);
-                Exports.Add(exp);
-            }
-
-            // 8 unknown bytes after export: 02 00 00 00 00 00 00 00
-            // 8 bytes pointed to by DependsOffset: 00 00 00 00 00 00 00 00
-
-            reader.BaseStream.Position = Header.PreloadDependencyOffset;
-            PreloadDependencies = new List<int>();
-            for (int i = 0; i < Header.PreloadDependencyCount; i++)
-            {
-                PreloadDependencies.Add(reader.ReadInt32());
-            }
-
-            ExportObjects = new List<AbstractExportObject>();
-            foreach (var exp in Exports)
-            {
-                reader.BaseStream.Position = exp.SerialOffset + Header.TotalHeaderSize;
-                var export = new AbstractExportObject();
-                export.Deserialize(reader, this);
-                ExportObjects.Add(export);
-            }
-
-            if (reader.BaseStream.Position != (reader.BaseStream.Length - 4))
-                throw new Exception("Failed to fully deserialize UAsset");
         }
     }
 }

@@ -385,17 +385,25 @@ namespace DQAsset
 
 		readonly static Regex csvParser = new Regex("(?:^|,)(\\\"(?:[^\\\"]+|\\\"\\\")*\\\"|[^,]*)", RegexOptions.Compiled);
 
+		// better regex that can handle empty cells, unfortunately doesn't work with strings that have double-quotes somewhere besides the start/end of cell
+		//readonly static Regex csvParser = new Regex(@"(?<=^|,)(?:""{2}|(?:)|[^,""\r\n]+|""(?:""{2}|[^""]+)+"")(?=,|$)", RegexOptions.Compiled);
+
 		//given a row from the csv file, loop through returning an array of column values
 		public static IEnumerable<string> ProcessCsvRow(string row)
 		{
 			MatchCollection results = csvParser.Matches(row);
 			foreach (Match match in results)
-			{
 				foreach (Capture capture in match.Captures)
-				{
-					yield return (capture.Value ?? string.Empty).TrimStart(',').Trim('"', ' ');
+                {
+					var ret = capture.Value ?? string.Empty;
+
+					if (ret.StartsWith(","))
+						ret = ret.Substring(1);
+					if (ret == "\"")
+						ret = string.Empty;
+
+					yield return ret;
 				}
-			}
 		}
 
 	}

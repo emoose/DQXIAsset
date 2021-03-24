@@ -6,6 +6,10 @@ namespace DQAsset
 { 
     class Program
     {
+        static bool CompareOutput = false;
+        static string BadFiles = "";
+        static bool SkipIfOutputExists = false;
+
         // Reads PackageFile from a UAsset file, if UExp exists next to it then they'll be merged before reading
         static PackageFile ReadPackage(string UAssetPath)
         {
@@ -80,6 +84,13 @@ namespace DQAsset
                 convertingToText = false;
                 inputUAsset = Path.ChangeExtension(inputFile, ".uasset");
             }
+
+            var outputUAsset = outputFile + ".uasset";
+            var outputUexp = outputFile + ".uexp";
+
+            if (SkipIfOutputExists && (File.Exists(outputFile) || File.Exists(outputUAsset)))
+                return;
+
             if (!File.Exists(inputUAsset))
             {
                 Console.WriteLine("failed to load base uasset from path");
@@ -113,15 +124,42 @@ namespace DQAsset
             var csvData = File.ReadAllText(inputFile);
             package.DeserializeText(csvData);
 
-            var outputUAsset = outputFile + ".uasset";
-            var outputUexp = outputFile + ".uexp";
-
             using (var outputUAssetWriter = new BinaryWriter(File.Create(outputUAsset)))
             using (var outputUexpWriter = new BinaryWriter(File.Create(outputUexp)))
                 package.Serialize(outputUexpWriter, outputUAssetWriter);
 
             Console.WriteLine("wrote out uasset/uexp files to path");
             Console.WriteLine($"  {outputFile}.uasset/uexp");
+
+            if (CompareOutput)
+            {
+                var hasher = System.Security.Cryptography.SHA256.Create();
+
+                var origUAsset = Path.ChangeExtension(inputFile, ".uasset");
+                var origUExp = Path.ChangeExtension(inputFile, ".uexp");
+                var newUAsset = outputUAsset;
+                var newUExp = outputUexp;
+
+                var origUExpHash = hasher.ComputeHash(File.ReadAllBytes(origUExp));
+                var newUExpHash = hasher.ComputeHash(File.ReadAllBytes(newUExp));
+                if (origUExpHash.ToHexString() != newUExpHash.ToHexString())
+                {
+                    Console.WriteLine("INVALID UEXP:");
+                    Console.WriteLine("  " + origUAsset);
+                    BadFiles += inputFile + "\r\n";
+                    return;
+                }
+
+                var origUAssetHash = hasher.ComputeHash(File.ReadAllBytes(origUAsset));
+                var newUAssetHash = hasher.ComputeHash(File.ReadAllBytes(newUAsset));
+                if (origUAssetHash.ToHexString() != newUAssetHash.ToHexString())
+                {
+                    Console.WriteLine("INVALID UASSET:");
+                    Console.WriteLine("  " + origUAsset);
+                    BadFiles += inputFile + "\r\n";
+                    return;
+                }
+            }
         }
 
         static List<string> FileBlackList = new List<string>()
@@ -145,7 +183,8 @@ namespace DQAsset
 
         static void BatchFolder(string folderPath)
         {
-           // BatchMode = true;
+            SkipIfOutputExists = false;
+            CompareOutput = true;
             var assets = Directory.GetFiles(folderPath, "*.uasset", SearchOption.AllDirectories);
             foreach (var asset in assets)
             {
@@ -165,7 +204,8 @@ namespace DQAsset
         static void Main(string[] args)
         {
             //JackDTStructsPostProcess();
-            //BatchFolder(@"C:\Games\JackGame\Content\DataTables");
+            //BatchFolder(@"C:\Games\DQXI\JackGame\Content\DataTables");
+            //File.WriteAllText(@"C:\Games\DQXI\bad.txt", BadFiles);
 
             if (args.Length < 1)
             {

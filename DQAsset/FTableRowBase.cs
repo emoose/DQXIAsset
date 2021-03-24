@@ -16,14 +16,14 @@ namespace DQAsset
             // strip quotes from around value
             // if (value.StartsWith("\"\"") && value.EndsWith("\"\""))
             //     value = value.Substring(2, value.Length - 4);
-            value = value.Replace("\"\"", "\"");
             if (value.StartsWith('"') && value.EndsWith('"'))
                 value = value.Substring(1, value.Length - 2);
+            value = value.Replace("\"\"", "\"");
 
             switch (type.Name)
             {
                 case "String":
-                    return value;
+                    return value.Replace("\\r", "\r").Replace("\\n", "\n");
                 case "Byte[]":
                     return Shared.StringToByteArray(value);
                 case "Boolean":
@@ -94,6 +94,12 @@ namespace DQAsset
             {
                 case "String": // FString
                     var str = (string)value;
+                    if (string.IsNullOrEmpty(str))
+                        return "\"\""; // hack to fix CSV regex not working properly with empty cells..
+                    if (str.Contains("\r"))
+                        str = str.Replace("\r", "\\r");
+                    if (str.Contains("\n"))
+                        str = str.Replace("\n", "\\n");
                     return str;
                     break;
                 case "Byte[]":

@@ -179,6 +179,7 @@ namespace DQAsset
             "DT_NavBuild.uasset",
             "DT_BattleAutoCameraCollision.uasset", // UDS STRUCT_DT_AutoCameraCollision
             "DT_PokerItem_.uasset", // UDS
+            "DT_TextDataTest.csv", // messes up our CSV splitting regex
         };
 
         static void BatchFolder(string folderPath)

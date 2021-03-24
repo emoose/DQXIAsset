@@ -190,10 +190,24 @@ namespace DQAsset
             return Hash;
         }
 
+		public static string UE4ToUpper(string str)
+        {
+			string retVal = "";
+			for(int i = 0; i < str.Length; i++)
+            {
+				var Ch = str[i];
+				var upperCh = char.ToUpper(Ch);
+				if (Ch >= 0xFF41 && Ch <= 0xFF5A)
+					upperCh = Ch; // ue4 doesn't set these to uppercase
+				retVal += upperCh;
+            }
+			return retVal;
+        }
+
 		public static uint UE4Strihash_DEPRECATED_Wide(string str)
 		{
 			uint Hash = 0;
-			byte[] Data = Encoding.Unicode.GetBytes(str.ToUpper());
+			byte[] Data = Encoding.Unicode.GetBytes(UE4ToUpper(str));
 			for (int i = 0; i < Data.Length; i+=2)
 			{
 				byte Ch = Data[i];

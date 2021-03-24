@@ -23,7 +23,7 @@ namespace DQAsset
             switch (type.Name)
             {
                 case "String":
-                    return value.Replace("\\r", "\r").Replace("\\n", "\n");
+                    return value.Replace("\\\\r", "\r").Replace("\\\\n", "\n");
                 case "Byte[]":
                     return Shared.StringToByteArray(value);
                 case "Boolean":
@@ -96,11 +96,7 @@ namespace DQAsset
                     var str = (string)value;
                     if (string.IsNullOrEmpty(str))
                         return "\"\""; // hack to fix CSV regex not working properly with empty cells..
-                    if (str.Contains("\r"))
-                        str = str.Replace("\r", "\\r");
-                    if (str.Contains("\n"))
-                        str = str.Replace("\n", "\\n");
-                    return str;
+                    return str.Replace("\r", "\\\\r").Replace("\n", "\\\\n");
                     break;
                 case "Byte[]":
                     var byt = (byte[])value;

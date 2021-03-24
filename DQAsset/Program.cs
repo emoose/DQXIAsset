@@ -10,6 +10,26 @@ namespace DQAsset
         static string BadFiles = "";
         static bool SkipIfOutputExists = false;
 
+        static List<string> FileBlackList = new List<string>()
+        {
+            // most of these seem to use UserDefinedStructs (UDS), not sure how to handle those yet
+            "DT_CharaLookByMaps.uasset",
+            "DT_Coordinate.uasset", // strange file
+            "DT_Crowd_SetList.uasset",
+            "DT_DebugAutoPlay.uasset",
+            "DT_DebugChairAnimation.uasset",
+            "DT_DebugCommandMacro.uasset", // seems to work fine, but contains newline chars (and is huge)
+            "DT_DebugCsCoordinate.uasset",
+            "DT_DebugNpcAnimation.uasset",
+            "DT_DebugNpcAnimCheck.uasset",
+            "DT_DebugNpcClassCoordinate.uasset",
+            "DT_DebugNpcSpawnTable.uasset",
+            "DT_NavBuild.uasset",
+            "DT_BattleAutoCameraCollision.uasset", // UDS STRUCT_DT_AutoCameraCollision
+            "DT_PokerItem_.uasset", // UDS
+            "DT_TextDataTest.csv", // messes up our CSV splitting regex
+        };
+
         // Reads PackageFile from a UAsset file, if UExp exists next to it then they'll be merged before reading
         static PackageFile ReadPackage(string UAssetPath)
         {
@@ -161,29 +181,6 @@ namespace DQAsset
                 }
             }
         }
-
-        static List<string> FileBlackList = new List<string>()
-        {
-            // most of these seem to use UserDefinedStructs (UDS), not sure how to handle those yet
-            "DT_CharaLookByMaps.uasset",
-            "DT_Coordinate.uasset", // strange file
-            "DT_Crowd_SetList.uasset",
-            "DT_DebugAutoPlay.uasset",
-            "DT_DebugChairAnimation.uasset",
-            "DT_DebugCommandMacro.uasset", // seems to work fine, but contains newline chars (and is huge)
-            "DT_DebugCsCoordinate.uasset",
-            "DT_DebugNpcAnimation.uasset",
-            "DT_DebugNpcAnimCheck.uasset",
-            "DT_DebugNpcClassCoordinate.uasset",
-            "DT_DebugNpcSpawnTable.uasset",
-            "DT_NavBuild.uasset",
-            "DT_BattleAutoCameraCollision.uasset", // UDS STRUCT_DT_AutoCameraCollision
-            "DT_PokerItem_.uasset", // UDS
-            // TODO: look into the following
-            "DT_TextDataTest.csv", // messes up our CSV splitting regex
-            "DT_TextDataSystem.csv",
-            "DT_TextPackMiniGame.csv"
-        };
 
         static void BatchFolder(string folderPath)
         {

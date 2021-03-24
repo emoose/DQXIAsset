@@ -39,7 +39,7 @@ namespace DQAsset
 
             var uasset = File.ReadAllBytes(UAssetPath);
             var uassetLength = uasset.Length;
-            if(File.Exists(UExpPath))
+            if (File.Exists(UExpPath))
             {
                 var uexp = File.ReadAllBytes(UExpPath);
                 var uexpLength = uexp.Length;
@@ -63,7 +63,7 @@ namespace DQAsset
         {
             var lines = File.ReadAllLines(@"C:\src\DQAsset\JackDTStructs.txt");
             var res = "";
-            foreach(var line in lines)
+            foreach (var line in lines)
             {
                 var curLine = line;
                 if (curLine.Contains(" MISSED OFFSET"))
@@ -82,7 +82,7 @@ namespace DQAsset
                 else if (curLine.Contains("*") || curLine.Contains("TWeakObjectPtr"))
                     curLine = "    //" + curLine.Substring(4);
 
-                if(curLine.Contains("TEnumAsByte<"))
+                if (curLine.Contains("TEnumAsByte<"))
                     curLine = curLine.Replace("TEnumAsByte<", "").Replace(">", ""); // meh
 
                 curLine = curLine.Replace(" : public ", " // : public ");
@@ -103,7 +103,7 @@ namespace DQAsset
             var inputExtension = Path.GetExtension(inputFile).ToLower();
             if (inputExtension == ".csv")
             {
-                if(string.IsNullOrEmpty(outputFile))
+                if (string.IsNullOrEmpty(outputFile))
                     outputFile = Path.Combine(Path.GetDirectoryName(inputFile), Path.GetFileNameWithoutExtension(inputFile) + "_mod");
                 else
                 {
@@ -117,7 +117,7 @@ namespace DQAsset
                 inputUAsset = Path.ChangeExtension(inputFile, ".uasset");
             }
             else
-                if(string.IsNullOrEmpty(outputFile))
+                if (string.IsNullOrEmpty(outputFile))
                     outputFile = Path.ChangeExtension(inputFile, ".csv");
 
             var outputUAsset = outputFile + ".uasset";
@@ -245,7 +245,7 @@ namespace DQAsset
             var inputFile = string.Empty;
             var outputFile = string.Empty;
 
-            for(int i = 0; i < args.Length; i++)
+            for (int i = 0; i < args.Length; i++)
             {
                 if (args[i] == "-sf")
                     DoFNameCleanup = false;
@@ -258,7 +258,7 @@ namespace DQAsset
                     inputFile = args[i];
             }
 
-            if(string.IsNullOrEmpty(inputFile))
+            if (string.IsNullOrEmpty(inputFile))
             {
                 Console.WriteLine("error: no input file specified!");
                 return;

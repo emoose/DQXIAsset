@@ -114,7 +114,7 @@ namespace DQAsset
                 ExportObjects.Add(export);
             }
 
-            if(!SkipPropertyDataLoad)
+            if (!SkipPropertyDataLoad)
                 if (reader.BaseStream.Position != (reader.BaseStream.Length - 4))
                     throw new Exception("Failed to fully deserialize UAsset");
         }
@@ -296,7 +296,7 @@ namespace DQAsset
         {
             writer.WriteFString(Name);
 
-            if(Shared.HasNonASCIIChars(Name))
+            if (Shared.HasNonASCIIChars(Name))
             {
                 NonCasePreservingHash = (ushort)(Shared.UE4Strihash_DEPRECATED_Wide(Name) & 0xFFFF);
                 CasePreservingHash = (ushort)(Shared.UE4StrCrc32_Wide(Name) & 0xFFFF);
@@ -661,7 +661,7 @@ namespace DQAsset
                     continue;
 
                 var objectProperty = prop as ObjectProperty;
-                if(!PackageFile.KnownTypes.TryGetValue(objectProperty.Value.ImportObject.ObjectName.Value, out rowType))
+                if (!PackageFile.KnownTypes.TryGetValue(objectProperty.Value.ImportObject.ObjectName.Value, out rowType))
                     if (!PackageFile.KnownTypes.TryGetValue("F" + objectProperty.Value.ImportObject.ObjectName.Value, out rowType))
                         throw new Exception($"UAsset uses unknown struct type {objectProperty.Value.ImportObject.ObjectName.Value}!");
 
@@ -672,7 +672,7 @@ namespace DQAsset
                 throw new Exception("Failed to find rowType type!");
 
             var lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-            foreach(var line in lines)
+            foreach (var line in lines)
             {
                 // Read + remove RowName from the line
                 var rowNameEndIdx = line.IndexOf(',');

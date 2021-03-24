@@ -182,7 +182,7 @@ namespace DQAsset
         {
             uint Hash = 0;
             byte[] Data = Encoding.UTF8.GetBytes(str.ToUpper());
-            for(int i = 0; i < Data.Length; i++)
+            for (int i = 0; i < Data.Length; i++)
             {
                 byte Ch = Data[i];
                 Hash = ((Hash >> 8) & 0x00FFFFFF) ^ CRCTable_DEPRECATED[(Hash ^ Ch) & 0x000000FF];
@@ -193,7 +193,7 @@ namespace DQAsset
 		public static string UE4ToUpper(string str)
         {
 			string retVal = "";
-			for(int i = 0; i < str.Length; i++)
+			for (int i = 0; i < str.Length; i++)
             {
 				var Ch = str[i];
 				var upperCh = char.ToUpper(Ch);

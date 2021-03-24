@@ -191,7 +191,7 @@ namespace DQAsset
                 retVal += ",";
             }
             // remove trailing comma
-            if(retVal.Length > 0)
+            if (retVal.Length > 0)
                 retVal = retVal.Substring(0, retVal.Length - 1);
             return retVal;
         }
@@ -202,7 +202,7 @@ namespace DQAsset
             var fields = GetType().GetFields().OrderBy(field => field.MetadataToken).ToList(); // hack to get fields in order of declaration (todo: use something less hacky, this might break mono?)
 
             int valueIdx = 0;
-            for(int i = 0; i < fields.Count; i++)
+            for (int i = 0; i < fields.Count; i++)
             {
                 var field = fields[i];
 
@@ -322,7 +322,7 @@ namespace DQAsset
                     var elementType = type.GetGenericArguments()[0];
                     var list = value as IList;
                     writer.Write(list.Count);
-                    for(int i = 0; i < list.Count; i++)
+                    for (int i = 0; i < list.Count; i++)
                         SerializeValue(elementType, settings, writer, package, list[i], true);
 
                     break;
@@ -351,7 +351,7 @@ namespace DQAsset
                 return reader.ReadByte() != 0;
             if (settings != null)
             {
-                if(settings.Size == 1)
+                if (settings.Size == 1)
                     return reader.ReadByte() != 0;
                 if (settings.Size == 2)
                     return reader.ReadUInt16() != 0;
@@ -400,7 +400,7 @@ namespace DQAsset
                     var list = Activator.CreateInstance(listType) as IList;
 
                     int count = reader.ReadInt32();
-                    for(int i = 0; i < count; i++)
+                    for (int i = 0; i < count; i++)
                         list.Add(DeserializeValue(elementType, settings, reader, package, true));
 
                     return list;
@@ -431,9 +431,9 @@ namespace DQAsset
             var fields = GetType().GetFields().OrderBy(field => field.MetadataToken); // hack to get fields in order of declaration (todo: use something less hacky, this might break mono?)
             foreach (var field in fields)
             {
-                if(field.Name == fieldName)
+                if (field.Name == fieldName)
                 {
-                    if(field.FieldType == typeof(FName))
+                    if (field.FieldType == typeof(FName))
                     {
                         var name = field.GetValue(this) as FName;
                         return name.Value != "None";
@@ -474,7 +474,7 @@ namespace DQAsset
                 if (CheckIsSet(settings.OnlyIfNotSet))
                     return false;
 
-            if(settings.OnlyIfAllSet != null && settings.OnlyIfAllSet.Length > 0)
+            if (settings.OnlyIfAllSet != null && settings.OnlyIfAllSet.Length > 0)
                 foreach (var field2 in settings.OnlyIfAllSet)
                     if (!CheckIsSet(field2))
                         return false;

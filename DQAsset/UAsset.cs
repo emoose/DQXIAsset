@@ -849,10 +849,34 @@ namespace DQAsset
             }
             uexp.Write(PACKAGE_FILE_TAG);
 
+            // Header.Generations seems to contain NameCount/ExportCount that matches header
+            // Check if any match the existing data, and choose that as the generation to update
+            int updateGenerationIdx = -1;
+            if(Header.Generations.Count > 0)
+            {
+                for(int i = 0; i < Header.Generations.Count; i++)
+                {
+                    var gen = Header.Generations[i];
+                    if(gen.NameCount == Header.NameCount && gen.ExportCount == Header.ExportCount)
+                    {
+                        updateGenerationIdx = i;
+                        break;
+                    }
+                }
+            }
+
             // Update header
             Header.NameCount = Names.Count;
             Header.ImportCount = Imports.Count;
             Header.ExportCount = Exports.Count;
+
+            if (updateGenerationIdx >= 0)
+            {
+                var gen = Header.Generations[updateGenerationIdx];
+                gen.ExportCount = Header.ExportCount;
+                gen.NameCount = Header.NameCount;
+            }
+
             Header.PreloadDependencyCount = PreloadDependencies.Count;
 
             // Write header (will get rewritten later with updated offsets etc)
@@ -939,6 +963,9 @@ namespace DQAsset
                 export.Deserialize(reader, this);
                 ExportObjects.Add(export);
             }
+
+            if (reader.BaseStream.Position != (reader.BaseStream.Length - 4))
+                throw new Exception("Failed to fully deserialize UAsset");
         }
     }
 }

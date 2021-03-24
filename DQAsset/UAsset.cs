@@ -24,18 +24,6 @@ namespace DQAsset
 
         public List<AbstractExportObject> ExportObjects;
 
-        public string SerializeText()
-        {
-            var retVal = "";
-            foreach (var exp in ExportObjects)
-            {
-                retVal += exp.SerializeTextHeader(this);
-                retVal += Environment.NewLine;
-                retVal += exp.SerializeText(this, true);
-            }
-            return retVal;
-        }
-
         public void DeserializeText(string text)
         {
             var lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
@@ -56,6 +44,73 @@ namespace DQAsset
                 }
                 exp.DeserializeText(newText, this);
             }
+        }
+
+        public string SerializeText()
+        {
+            var retVal = "";
+            foreach (var exp in ExportObjects)
+            {
+                retVal += exp.SerializeTextHeader(this);
+                retVal += Environment.NewLine;
+                retVal += exp.SerializeText(this, true);
+            }
+            return retVal;
+        }
+
+        public void Deserialize(BinaryReader reader)
+        {
+            Header = new PackageFileSummary();
+            Header.Deserialize(reader, this);
+
+            reader.BaseStream.Position = Header.NameOffset;
+            Names = new List<NameEntry>();
+            for (int i = 0; i < Header.NameCount; i++)
+            {
+                var entry = new NameEntry();
+                entry.Deserialize(reader, this);
+                Names.Add(entry);
+            }
+
+            reader.BaseStream.Position = Header.ImportOffset;
+            Imports = new List<ObjectImport>();
+            for (int i = 0; i < Header.ImportCount; i++)
+            {
+                var imp = new ObjectImport();
+                imp.Deserialize(reader, this);
+                Imports.Add(imp);
+            }
+
+            reader.BaseStream.Position = Header.ExportOffset;
+            Exports = new List<ObjectExport>();
+            for (int i = 0; i < Header.ExportCount; i++)
+            {
+                var exp = new ObjectExport();
+                exp.Deserialize(reader, this);
+                Exports.Add(exp);
+            }
+
+            // 8 unknown bytes after export: 02 00 00 00 00 00 00 00
+            // 8 bytes pointed to by DependsOffset: 00 00 00 00 00 00 00 00
+
+            reader.BaseStream.Position = Header.PreloadDependencyOffset;
+            PreloadDependencies = new List<int>();
+            for (int i = 0; i < Header.PreloadDependencyCount; i++)
+            {
+                PreloadDependencies.Add(reader.ReadInt32());
+            }
+
+            ExportObjects = new List<AbstractExportObject>();
+            foreach (var exp in Exports)
+            {
+                reader.BaseStream.Position = exp.SerialOffset + Header.TotalHeaderSize;
+                var export = new AbstractExportObject();
+                export.Deserialize(reader, this);
+                ExportObjects.Add(export);
+            }
+
+            if (reader.BaseStream.Position != (reader.BaseStream.Length - 4))
+                throw new Exception("Failed to fully deserialize UAsset");
         }
 
         public void Serialize(BinaryWriter uexp, BinaryWriter uasset)
@@ -143,61 +198,6 @@ namespace DQAsset
             // Write updated section offsets/sizes to header:
             uasset.BaseStream.Position = headerPosition;
             Header.Serialize(uasset, this);
-        }
-
-        public void Deserialize(BinaryReader reader)
-        {
-            Header = new PackageFileSummary();
-            Header.Deserialize(reader, this);
-
-            reader.BaseStream.Position = Header.NameOffset;
-            Names = new List<NameEntry>();
-            for (int i = 0; i < Header.NameCount; i++)
-            {
-                var entry = new NameEntry();
-                entry.Deserialize(reader, this);
-                Names.Add(entry);
-            }
-
-            reader.BaseStream.Position = Header.ImportOffset;
-            Imports = new List<ObjectImport>();
-            for (int i = 0; i < Header.ImportCount; i++)
-            {
-                var imp = new ObjectImport();
-                imp.Deserialize(reader, this);
-                Imports.Add(imp);
-            }
-
-            reader.BaseStream.Position = Header.ExportOffset;
-            Exports = new List<ObjectExport>();
-            for (int i = 0; i < Header.ExportCount; i++)
-            {
-                var exp = new ObjectExport();
-                exp.Deserialize(reader, this);
-                Exports.Add(exp);
-            }
-
-            // 8 unknown bytes after export: 02 00 00 00 00 00 00 00
-            // 8 bytes pointed to by DependsOffset: 00 00 00 00 00 00 00 00
-
-            reader.BaseStream.Position = Header.PreloadDependencyOffset;
-            PreloadDependencies = new List<int>();
-            for (int i = 0; i < Header.PreloadDependencyCount; i++)
-            {
-                PreloadDependencies.Add(reader.ReadInt32());
-            }
-
-            ExportObjects = new List<AbstractExportObject>();
-            foreach (var exp in Exports)
-            {
-                reader.BaseStream.Position = exp.SerialOffset + Header.TotalHeaderSize;
-                var export = new AbstractExportObject();
-                export.Deserialize(reader, this);
-                ExportObjects.Add(export);
-            }
-
-            if (reader.BaseStream.Position != (reader.BaseStream.Length - 4))
-                throw new Exception("Failed to fully deserialize UAsset");
         }
     }
 

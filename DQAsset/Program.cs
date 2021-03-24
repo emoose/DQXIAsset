@@ -90,20 +90,31 @@ namespace DQAsset
             File.WriteAllText(@"C:\src\DQAsset\JackDTStructs_new3.txt", res);
         }
 
-        static void HandleInput(string inputFile)
+        static void HandleInput(string inputFile, string outputFile)
         {
-            var inputUAsset = inputFile;
-            var outputFile = Path.ChangeExtension(inputFile, ".csv");
+            var inputUAsset = inputFile;      
 
             bool convertingToText = true;
 
-            var inputExtension = Path.GetExtension(inputFile);
+            var inputExtension = Path.GetExtension(inputFile).ToLower();
             if (inputExtension == ".csv")
             {
-                outputFile = Path.Combine(Path.GetDirectoryName(inputFile), Path.GetFileNameWithoutExtension(inputFile) + "_mod");
+                if(string.IsNullOrEmpty(outputFile))
+                    outputFile = Path.Combine(Path.GetDirectoryName(inputFile), Path.GetFileNameWithoutExtension(inputFile) + "_mod");
+                else
+                {
+                    // remove extension from output path if user gave .uasset/.uexp
+                    var ext = Path.GetExtension(outputFile).ToLower();
+                    if (ext == ".uasset" || ext == ".uexp")
+                        outputFile = outputFile.Substring(0, outputFile.LastIndexOf('.'));
+                }
+
                 convertingToText = false;
                 inputUAsset = Path.ChangeExtension(inputFile, ".uasset");
             }
+            else
+                if(string.IsNullOrEmpty(outputFile))
+                    outputFile = Path.ChangeExtension(inputFile, ".csv");
 
             var outputUAsset = outputFile + ".uasset";
             var outputUexp = outputFile + ".uexp";
@@ -198,19 +209,23 @@ namespace DQAsset
                     continue;
                 }
                 Console.WriteLine(asset);
-                HandleInput(asset);
+                HandleInput(asset, string.Empty);
             }
         }
 
         static void Main(string[] args)
         {
+            Console.WriteLine("DQXIAsset by emoose");
+            Console.WriteLine("https://github.com/emoose/DQXIAsset");
+            Console.WriteLine();
+
             //JackDTStructsPostProcess();
             //BatchFolder(@"C:\Games\DQXI\JackGame\Content\DataTables");
             //File.WriteAllText(@"C:\Games\DQXI\bad.txt", BadFiles);
 
             if (args.Length < 1)
             {
-                Console.WriteLine("Usage: DQAsset.exe <path/to/uasset/or/csv>");
+                Console.WriteLine("Usage: DQAsset.exe [-o <output/path>] <path/to/uasset/or/csv>");
                 Console.WriteLine("Will convert UAsset/UExp pair to CSV, or CSV to UAsset/UExp pair");
                 Console.WriteLine();
                 Console.WriteLine("Note that CSV should have the original UAsset/UExp files next to it, for DQAsset to use as a base to update");
@@ -219,8 +234,27 @@ namespace DQAsset
                 return;
             }
 
-            var inputFile = args[0];
-            HandleInput(inputFile);
+            var inputFile = string.Empty;
+            var outputFile = string.Empty;
+
+            for(int i = 0; i < args.Length; i++)
+            {
+                if(args[i] == "-o" && args.Length > i+1)
+                {
+                    outputFile = args[i + 1];
+                    i++;
+                }
+                else
+                    inputFile = args[i];
+            }
+
+            if(string.IsNullOrEmpty(inputFile))
+            {
+                Console.WriteLine("error: no input file specified!");
+                return;
+            }
+
+            HandleInput(inputFile, outputFile);
         }
     }
 }

@@ -6,6 +6,8 @@ namespace DQAsset
 { 
     class Program
     {
+        public static bool DoFNameCleanup = true;
+
         static bool CompareOutput = false;
         static string BadFiles = "";
         static bool SkipIfOutputExists = false;
@@ -31,7 +33,7 @@ namespace DQAsset
         };
 
         // Reads PackageFile from a UAsset file, if UExp exists next to it then they'll be merged before reading
-        static PackageFile ReadPackage(string UAssetPath)
+        static PackageFile ReadPackage(string UAssetPath, bool convertingFromCsv)
         {
             var UExpPath = Path.ChangeExtension(UAssetPath, ".uexp");
 
@@ -49,6 +51,8 @@ namespace DQAsset
             using (var reader = new BinaryReader(new MemoryStream(uasset)))
             {
                 var sum = new PackageFile();
+                if (convertingFromCsv)
+                    sum.SkipPropertyDataLoad = true;
                 sum.Deserialize(reader);
                 return sum;
             }
@@ -94,7 +98,7 @@ namespace DQAsset
         {
             var inputUAsset = inputFile;      
 
-            bool convertingToText = true;
+            bool convertingFromCsv = false;
 
             var inputExtension = Path.GetExtension(inputFile).ToLower();
             if (inputExtension == ".csv")
@@ -109,7 +113,7 @@ namespace DQAsset
                         outputFile = outputFile.Substring(0, outputFile.LastIndexOf('.'));
                 }
 
-                convertingToText = false;
+                convertingFromCsv = true;
                 inputUAsset = Path.ChangeExtension(inputFile, ".uasset");
             }
             else
@@ -129,8 +133,8 @@ namespace DQAsset
                 return;
             }
 
-            var package = ReadPackage(inputUAsset);
-            if (convertingToText)
+            var package = ReadPackage(inputUAsset, convertingFromCsv);
+            if (!convertingFromCsv)
             {
                 File.WriteAllText(outputFile, package.SerializeText());
                 Console.WriteLine("wrote out CSV to path");
@@ -157,7 +161,7 @@ namespace DQAsset
 
             using (var outputUAssetWriter = new BinaryWriter(File.Create(outputUAsset)))
             using (var outputUexpWriter = new BinaryWriter(File.Create(outputUexp)))
-                package.Serialize(outputUexpWriter, outputUAssetWriter);
+                package.Serialize(outputUexpWriter, outputUAssetWriter, Program.DoFNameCleanup);
 
             Console.WriteLine("wrote out uasset/uexp files to path");
             Console.WriteLine($"  {outputFile}.uasset/uexp");
@@ -225,8 +229,12 @@ namespace DQAsset
 
             if (args.Length < 1)
             {
-                Console.WriteLine("Usage: DQAsset.exe [-o <output/path>] <path/to/uasset/or/csv>");
-                Console.WriteLine("Will convert UAsset/UExp pair to CSV, or CSV to UAsset/UExp pair");
+                Console.WriteLine("Allows converting UAsset/UExp pair to CSV, or CSV to UAsset/UExp pair");
+                Console.WriteLine("Usage: DQAsset.exe [-o <output/path>] [-sf] <path/to/uasset/or/csv>");
+                Console.WriteLine();
+                Console.WriteLine("Options:");
+                Console.WriteLine("  -o <output/path>: sets path to write output file to");
+                Console.WriteLine("  -sf: skips fname cleanup, may improve uasset creation speed");
                 Console.WriteLine();
                 Console.WriteLine("Note that CSV should have the original UAsset/UExp files next to it, for DQAsset to use as a base to update");
                 Console.WriteLine("Updated UAsset/UExp pair will be written to <path>_mod.uasset/uexp");
@@ -239,7 +247,9 @@ namespace DQAsset
 
             for(int i = 0; i < args.Length; i++)
             {
-                if(args[i] == "-o" && args.Length > i+1)
+                if (args[i] == "-sf")
+                    DoFNameCleanup = false;
+                else if (args[i] == "-o" && args.Length > i+1)
                 {
                     outputFile = args[i + 1];
                     i++;

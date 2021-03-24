@@ -23,6 +23,11 @@ namespace DQAsset
         public List<int> PreloadDependencies;
 
         public List<AbstractExportObject> ExportObjects;
+        public bool SkipPropertyDataLoad = false; // skips deserializing DT data, eg. if we're just loading this as base to apply CSV to
+
+        public bool UexpWriteInProgress = false;
+        public bool FNameCleanupInProgress = false;
+        public List<Tuple<FName, long>> UExpFnames;
 
         public void DeserializeText(string text)
         {
@@ -109,32 +114,47 @@ namespace DQAsset
                 ExportObjects.Add(export);
             }
 
-            if (reader.BaseStream.Position != (reader.BaseStream.Length - 4))
-                throw new Exception("Failed to fully deserialize UAsset");
+            if(!SkipPropertyDataLoad)
+                if (reader.BaseStream.Position != (reader.BaseStream.Length - 4))
+                    throw new Exception("Failed to fully deserialize UAsset");
         }
 
-        public void Serialize(BinaryWriter uexp, BinaryWriter uasset)
+        public void Serialize(BinaryWriter uexp, BinaryWriter uasset, bool doFnameCleanup)
         {
-            // Clearing Names would force all FNames to readd themselves, easy way to remove any unused names from the array
-            // We don't add Names in the same order as UE itself yet tho, so this causes the whole names section to get shuffled around from the original
-            // Maybe could be added as an optional parameter or something?
-            // Names.Clear();
+            // Set flag to make FName::Serialize add itself to a list
+            // This way we can update all FNames later without needing to do another whole serialization pass
+            FNameCleanupInProgress = doFnameCleanup;
+            if (doFnameCleanup)
+                UExpFnames = new List<Tuple<FName, long>>();
 
             // Write out export data first
-            var uexpPosition = uexp.BaseStream.Position;
-            for (int i = 0; i < Exports.Count; i++)
+            if (uexp != null)
             {
-                var expPosition = uexp.BaseStream.Position;
+                var uexpPosition = uexp.BaseStream.Position;
 
-                var exportHeader = Exports[i];
-                var exportData = ExportObjects[i];
+                if (doFnameCleanup)
+                    foreach (var entry in Names)
+                        entry.InUse = false;
 
-                exportHeader.SerialOffset = uexp.BaseStream.Position - uexpPosition;
-                exportData.Serialize(uexp, this);
+                UexpWriteInProgress = true;
+                for (int i = 0; i < Exports.Count; i++)
+                {
+                    var expPosition = uexp.BaseStream.Position;
 
-                exportHeader.SerialSize = uexp.BaseStream.Position - expPosition;
+                    var exportHeader = Exports[i];
+                    var exportData = ExportObjects[i];
+
+                    exportHeader.SerialOffset = uexp.BaseStream.Position - uexpPosition;
+                    exportData.Serialize(uexp, this);
+
+                    exportHeader.SerialSize = uexp.BaseStream.Position - expPosition;
+                }
+
+                uexp.Write(PACKAGE_FILE_TAG);
             }
-            uexp.Write(PACKAGE_FILE_TAG);
+
+            // Don't allow uasset header FNames to add to UExpFnames
+            UexpWriteInProgress = false;
 
             // Header.Generations seems to contain NameCount/ExportCount that matches header
             // Check if any match the existing data, and choose that as the generation to update
@@ -198,6 +218,62 @@ namespace DQAsset
             // Write updated section offsets/sizes to header:
             uasset.BaseStream.Position = headerPosition;
             Header.Serialize(uasset, this);
+
+            if (doFnameCleanup)
+            {
+                var notInUseFNameIndexes = new List<int>();
+
+                // Process the indexes in reverse order so indexes remain valid during the RemoveAt foreach
+                for (int i = Names.Count - 1; i >= 0; i--)
+                    if (!Names[i].InUse)
+                        if (!Names[i].Name.StartsWith("/Game/DataTables/")) // some reason this isn't referenced by any FName in the file, make sure to exclude it...
+                            notInUseFNameIndexes.Add(i);
+
+                // Some FNames are part of a larger FName, smaller one isn't referenced but I guess is important since it exists...
+                // Check if any to-be-removed FNames are part of something larger
+                for (int i = notInUseFNameIndexes.Count - 1; i >= 0; i--)
+                {
+                    var name = Names[notInUseFNameIndexes[i]].Name;
+                    bool removeFromList = false;
+                    for (int y = 0; y < Names.Count; y++)
+                    {
+                        if (!notInUseFNameIndexes.Contains(y))
+                            if (Names[y].Name.StartsWith(name))
+                            {
+                                removeFromList = true;
+                                break;
+                            }
+                    }
+                    if (removeFromList)
+                        notInUseFNameIndexes.RemoveAt(i);
+                }
+
+                FNameCleanupInProgress = false;
+
+                if (notInUseFNameIndexes.Count <= 0)
+                    return; // no cleanup needed
+
+                // debug:
+                /*var notInUse = new List<string>();
+                foreach (var idx in notInUseFNameIndexes)
+                    notInUse.Add(Names[idx].Name);*/
+
+                // Remove not in use entries
+                foreach (var idx in notInUseFNameIndexes)
+                    Names.RemoveAt(idx);
+
+                // Update FName indexes inside uexp
+                foreach (var name in UExpFnames)
+                {
+                    uexp.BaseStream.Position = name.Item2;
+                    name.Item1.Serialize(uexp, this);
+                }
+
+                // Need to do second header serialization pass so that updated Names array/indexes are written
+                uasset.BaseStream.Position = headerPosition;
+                uasset.BaseStream.SetLength(0);
+                Serialize(null, uasset, false);
+            }
         }
     }
 
@@ -206,6 +282,8 @@ namespace DQAsset
         public string Name;
         public ushort NonCasePreservingHash;
         public ushort CasePreservingHash;
+
+        public bool InUse; // set/reset during serialization so we can tell any unused entries
 
         public void Deserialize(BinaryReader reader, PackageFile package)
         {
@@ -291,6 +369,13 @@ namespace DQAsset
                 Index = package.Names.FindIndex(s => s.Name == Value);
                 if (Index == -1)
                     throw new Exception("Failed to add new FName for some reason!");
+            }
+
+            if (package.FNameCleanupInProgress)
+            {
+                package.Names[Index].InUse = true;
+                if (package.UexpWriteInProgress)
+                    package.UExpFnames.Add(new Tuple<FName, long>(this, writer.BaseStream.Position));
             }
 
             writer.Write(Index);
@@ -706,13 +791,18 @@ namespace DQAsset
 
                 var objectProperty = prop as ObjectProperty;
 
-                int count = reader.ReadInt32();
-
                 Type? propertyType;
                 if (!PackageFile.KnownTypes.TryGetValue(objectProperty.Value.ImportObject.ObjectName.Value, out propertyType))
                     if (!PackageFile.KnownTypes.TryGetValue("F" + objectProperty.Value.ImportObject.ObjectName.Value, out propertyType))
                         throw new Exception($"UAsset uses unknown struct type {objectProperty.Value.ImportObject.ObjectName.Value}!");
 
+                if (propertyType == typeof(FJackDataTableNativizationAsset) || propertyType == typeof(FJackDataTableBlueprintClass))
+                    Program.DoFNameCleanup = false; // contains a bunch of unreferenced FNames, can't cleanup properly :(
+
+                if (package.SkipPropertyDataLoad)
+                    continue;
+
+                int count = reader.ReadInt32();
                 for (int i = 0; i < count; i++)
                 {
                     var rowName = new FName();

@@ -1562,10 +1562,9 @@ namespace DQAsset
     // ScriptStruct JackGame.JackDataTableCollideEffect
     // 0x0008 (0x0010 - 0x0008)
     [Serializer(NoStructSize = true)]
-    public class FJackDataTableCollideEffect : FTableRowBase
+    public class FJackDataTableCollideEffect : UObject
     {
-        public int ClassImport; // TODO: seems to refer to something in the UAsset
-        //public class UClass*                                      CollideEffect;                                            // 0x0008(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        // TODO: doesn't seem to follow FJackDataTableCollideEffect format at all..
     }
 
     // ScriptStruct JackGame.JackDataTableMaterialParameterCollection
@@ -1607,9 +1606,9 @@ namespace DQAsset
     // ScriptStruct JackGame.JackDataTableWeaponClass
     // 0x0008 (0x0010 - 0x0008)
     [Serializer(NoStructSize = true)]
-    public class FJackDataTableWeaponClass : FTableRowBase
+    public class FJackDataTableWeaponClass : UObject
     {
-        public int ClassImport; // TODO: seems to refer to something in the UAsset
+        //public int ClassImport; // TODO: seems to refer to something in the UAsset
         //public class UClass*                                      WeaponClass;                                              // 0x0008(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
     }
 
@@ -6643,15 +6642,8 @@ namespace DQAsset
     // ScriptStruct JackGame.JackDataTableNativizationAsset
     // 0x0008 (0x0010 - 0x0008)
     [Serializer(NoStructSize = true)]
-    public class FJackDataTableNativizationAsset : FTableRowBase
+    public class FJackDataTableNativizationAsset : UObject
     {
-        // TODO: move these to UObject class, and figure out names of them
-        public FName NativizationAsset;                                        // 0x0008(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-        public FName Unknown0x8;
-        public FName Unknown0x10;
-        public byte Unknown0x18;
-        public int ClassIndex;
-        public FName Unknown0x1D;
     }
 
     // ScriptStruct JackAnimNodeRuntime.JackAnimDynamicsConstraintSetup

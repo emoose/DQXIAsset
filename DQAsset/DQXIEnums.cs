@@ -12209,4 +12209,13 @@ namespace DQAsset
         EJackUpperDynamicBoneState__Sim_CollarE_P007 = 8,
         EJackUpperDynamicBoneState__EJackUpperDynamicBoneState_MAX = 9
     }
+
+    // Enum JackAnimNodeRuntime.EJackBoneAxis
+    public enum EJackBoneAxis : byte
+    {
+        EJackBoneAxis__X = 0,
+        EJackBoneAxis__Y = 1,
+        EJackBoneAxis__Z = 2,
+        EJackBoneAxis__EJackBoneAxis_MAX = 3
+    }
 }

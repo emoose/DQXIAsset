@@ -49,4 +49,14 @@ namespace DQAsset
         public FVector Translation;                                              // 0x0010(0x000C) (Edit, BlueprintVisi, SaveGame, IsPlainOldData)
         public FVector Scale3D;                                                  // 0x0020(0x000C) (Edit, BlueprintVisi, SaveGame, IsPlainOldData)
     }
+
+    public class UObject : FTableRowBase
+    {
+        public FName Unknown0x0;                                        // 0x0008(0x0008) (Edit, BlueprintVisi, BlueprintReadOnly, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+        public FName Unknown0x8;
+        public FName Unknown0x10;
+        public byte Unknown0x18;
+        public int ClassIndex;
+        public FName Unknown0x1D;
+    }
 }

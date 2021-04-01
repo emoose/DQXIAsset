@@ -9,14 +9,6 @@ namespace DQAsset
         public int NameCount;
     }
 
-    public struct EngineVersion
-    {
-        public uint Major;
-        public uint Minor;
-        public uint Patch;
-        public uint Changeset;
-    }
-
     public struct CompressedChunk
     {
         public int UncompressedOffset;

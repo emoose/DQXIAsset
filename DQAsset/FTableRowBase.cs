@@ -14,8 +14,6 @@ namespace DQAsset
         public object DeserializeValueText(Type type, SerializerAttribute settings, PackageFile package, string value)
         {
             // strip quotes from around value
-            // if (value.StartsWith("\"\"") && value.EndsWith("\"\""))
-            //     value = value.Substring(2, value.Length - 4);
             if (value.StartsWith('"') && value.EndsWith('"'))
                 value = value.Substring(1, value.Length - 2);
             value = value.Replace("\"\"", "\"");
@@ -97,11 +95,9 @@ namespace DQAsset
                     if (string.IsNullOrEmpty(str))
                         return "\"\""; // hack to fix CSV regex not working properly with empty cells..
                     return str.Replace("\r", "\\\\r").Replace("\n", "\\\\n");
-                    break;
                 case "Byte[]":
                     var byt = (byte[])value;
                     return byt.ToHexString();
-                    break;
                 case "Boolean":
                     return (bool)value ? "true" : "false";
                 case "Byte":

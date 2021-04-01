@@ -95,7 +95,6 @@ namespace DQAsset
                 Exports.Add(exp);
             }
 
-            // 8 unknown bytes after export: 02 00 00 00 00 00 00 00
             // 8 bytes pointed to by DependsOffset: 00 00 00 00 00 00 00 00
 
             reader.BaseStream.Position = Header.PreloadDependencyOffset;
@@ -108,7 +107,7 @@ namespace DQAsset
             ExportObjects = new List<AbstractExportObject>();
             foreach (var exp in Exports)
             {
-                reader.BaseStream.Position = exp.SerialOffset + Header.TotalHeaderSize;
+                reader.BaseStream.Position = exp.SerialOffset;
                 var export = new AbstractExportObject();
                 export.Deserialize(reader, this);
                 ExportObjects.Add(export);
@@ -184,7 +183,8 @@ namespace DQAsset
                 gen.NameCount = Header.NameCount;
             }
 
-            Header.PreloadDependencyCount = PreloadDependencies.Count;
+            if(Header.IsVersionOrGreater(UE4Versions.VER_UE4_PRELOAD_DEPENDENCIES_IN_COOKED_EXPORTS))
+                Header.PreloadDependencyCount = PreloadDependencies.Count;
 
             // Write header (will get rewritten later with updated offsets etc)
             var headerPosition = uasset.BaseStream.Position;
@@ -202,22 +202,35 @@ namespace DQAsset
             foreach (var exp in Exports)
                 exp.Serialize(uasset, this);
 
-            byte[] unknownAfterExportBytes = { 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-            uasset.Write(unknownAfterExportBytes);
-
+            // TODO: should we be handling the Depends stuff properly?
             Header.DependsOffset = (int)(uasset.BaseStream.Position - headerPosition);
-            byte[] unknownDependsBytes = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-            uasset.Write(unknownDependsBytes);
+            for (int i = 0; i < Exports.Count; i++)
+                uasset.Write(0);
 
-            Header.PreloadDependencyOffset = (int)(uasset.BaseStream.Position - headerPosition);
-            foreach (var preloadDep in PreloadDependencies)
-                uasset.Write(preloadDep);
+            Header.AssetRegistryDataOffset = (int)(uasset.BaseStream.Position - headerPosition);
+            uasset.Write(0);
+
+            if (Header.IsVersionOrGreater(UE4Versions.VER_UE4_PRELOAD_DEPENDENCIES_IN_COOKED_EXPORTS))
+            {
+                Header.PreloadDependencyOffset = (int)(uasset.BaseStream.Position - headerPosition);
+                foreach (var preloadDep in PreloadDependencies)
+                    uasset.Write(preloadDep);
+            }
 
             Header.TotalHeaderSize = (int)(uasset.BaseStream.Position - headerPosition);
 
             // Write updated section offsets/sizes to header:
             uasset.BaseStream.Position = headerPosition;
             Header.Serialize(uasset, this);
+
+            // Update export objects with proper SerialOffset
+            // TODO: figure out why this wasn't needed previously!
+            uasset.BaseStream.Position = headerPosition + Header.ExportOffset;
+            foreach (var exp in Exports)
+            {
+                exp.SerialOffset += Header.TotalHeaderSize;
+                exp.Serialize(uasset, this);
+            }
 
             if (doFnameCleanup)
             {
@@ -288,6 +301,9 @@ namespace DQAsset
         public void Deserialize(BinaryReader reader, PackageFile package)
         {
             Name = reader.ReadFString();
+            if (!package.Header.IsVersionOrGreater(UE4Versions.VER_UE4_NAME_HASHES_SERIALIZED))
+                return;
+
             NonCasePreservingHash = reader.ReadUInt16();
             CasePreservingHash = reader.ReadUInt16();
         }
@@ -295,6 +311,9 @@ namespace DQAsset
         public void Serialize(BinaryWriter writer, PackageFile package)
         {
             writer.WriteFString(Name);
+
+            if (!package.Header.IsVersionOrGreater(UE4Versions.VER_UE4_NAME_HASHES_SERIALIZED))
+                return;
 
             if (Shared.HasNonASCIIChars(Name))
             {
@@ -473,13 +492,13 @@ namespace DQAsset
         public uint ObjectFlags;
         public long SerialSize;
         public long SerialOffset;
-        public int ForcedExport;
-        public int NotForClient;
-        public int NotForServer;
+        public int bForcedExport;
+        public int bNotForClient;
+        public int bNotForServer;
         public byte[] PackageGuid;
         public uint PackageFlags;
-        public int NotAlwaysLoadedForEditorGame;
-        public int IsAsset;
+        public int bNotAlwaysLoadedForEditorGame;
+        public int bIsAsset;
         public int FirstExportDependency;
         public int SerializationBeforeSerializationDependencies;
         public int CreateBeforeSerializationDependencies;
@@ -492,67 +511,88 @@ namespace DQAsset
             ClassIndex.Deserialize(reader, package);
             SuperIndex = new PackageIndex();
             SuperIndex.Deserialize(reader, package);
-            TemplateIndex = new PackageIndex();
-            TemplateIndex.Deserialize(reader, package);
+
+            if (package.Header.IsVersionOrGreater(UE4Versions.VER_UE4_TemplateIndex_IN_COOKED_EXPORTS))
+            {
+                TemplateIndex = new PackageIndex();
+                TemplateIndex.Deserialize(reader, package);
+            }
+
             OuterIndex = new PackageIndex();
             OuterIndex.Deserialize(reader, package);
 
             ObjectName = new FName();
             ObjectName.Deserialize(reader, package);
+
             ObjectFlags = reader.ReadUInt32();
 
-            SerialSize = package.Header.FileVersionUE4 >= 511 ? reader.ReadInt64() : reader.ReadInt32();
-            SerialOffset = package.Header.FileVersionUE4 >= 511 ? reader.ReadInt64() : reader.ReadInt32();
+            SerialSize = package.Header.IsVersionOrGreater(UE4Versions.VER_UE4_64BIT_EXPORTMAP_SERIALSIZES) ? reader.ReadInt64() : reader.ReadInt32();
+            SerialOffset = package.Header.IsVersionOrGreater(UE4Versions.VER_UE4_64BIT_EXPORTMAP_SERIALSIZES) ? reader.ReadInt64() : reader.ReadInt32();
 
-            ForcedExport = reader.ReadInt32();
-            NotForClient = reader.ReadInt32();
-            NotForServer = reader.ReadInt32();
+            bForcedExport = reader.ReadInt32();
+            bNotForClient = reader.ReadInt32();
+            bNotForServer = reader.ReadInt32();
 
             PackageGuid = reader.ReadBytes(0x10);
             PackageFlags = reader.ReadUInt32();
 
-            NotAlwaysLoadedForEditorGame = reader.ReadInt32();
-            IsAsset = reader.ReadInt32();
-            FirstExportDependency = reader.ReadInt32();
-            SerializationBeforeSerializationDependencies = reader.ReadInt32();
-            CreateBeforeSerializationDependencies = reader.ReadInt32();
-            SerializationBeforeCreateDependencies = reader.ReadInt32();
-            CreateBeforeCreateDependencies = reader.ReadInt32();
+            if (package.Header.IsVersionOrGreater(UE4Versions.VER_UE4_LOAD_FOR_EDITOR_GAME))
+                bNotAlwaysLoadedForEditorGame = reader.ReadInt32();
+
+            if (package.Header.IsVersionOrGreater(UE4Versions.VER_UE4_COOKED_ASSETS_IN_EDITOR_SUPPORT))
+                bIsAsset = reader.ReadInt32();
+
+            if (package.Header.IsVersionOrGreater(UE4Versions.VER_UE4_PRELOAD_DEPENDENCIES_IN_COOKED_EXPORTS))
+            {
+                FirstExportDependency = reader.ReadInt32();
+                SerializationBeforeSerializationDependencies = reader.ReadInt32();
+                CreateBeforeSerializationDependencies = reader.ReadInt32();
+                SerializationBeforeCreateDependencies = reader.ReadInt32();
+                CreateBeforeCreateDependencies = reader.ReadInt32();
+            }
         }
 
         public void Serialize(BinaryWriter writer, PackageFile package)
         {
             ClassIndex.Serialize(writer, package);
             SuperIndex.Serialize(writer, package);
-            TemplateIndex.Serialize(writer, package);
+            if (package.Header.IsVersionOrGreater(UE4Versions.VER_UE4_TemplateIndex_IN_COOKED_EXPORTS))
+                TemplateIndex.Serialize(writer, package);
             OuterIndex.Serialize(writer, package);
 
             ObjectName.Serialize(writer, package);
             writer.Write(ObjectFlags);
 
-            if (package.Header.FileVersionUE4 >= 511)
+            if (package.Header.IsVersionOrGreater(UE4Versions.VER_UE4_64BIT_EXPORTMAP_SERIALSIZES))
                 writer.Write(SerialSize);
             else
                 writer.Write((int)SerialSize);
 
-            if (package.Header.FileVersionUE4 >= 511)
+            if (package.Header.IsVersionOrGreater(UE4Versions.VER_UE4_64BIT_EXPORTMAP_SERIALSIZES))
                 writer.Write(SerialOffset);
             else
                 writer.Write((int)SerialOffset);
 
-            writer.Write(ForcedExport);
-            writer.Write(NotForClient);
-            writer.Write(NotForServer);
+            writer.Write(bForcedExport);
+            writer.Write(bNotForClient);
+            writer.Write(bNotForServer);
             writer.Write(PackageGuid);
             writer.Write(PackageFlags);
 
-            writer.Write(NotAlwaysLoadedForEditorGame);
-            writer.Write(IsAsset);
-            writer.Write(FirstExportDependency);
-            writer.Write(SerializationBeforeSerializationDependencies);
-            writer.Write(CreateBeforeSerializationDependencies);
-            writer.Write(SerializationBeforeCreateDependencies);
-            writer.Write(CreateBeforeCreateDependencies);
+            if (package.Header.IsVersionOrGreater(UE4Versions.VER_UE4_LOAD_FOR_EDITOR_GAME))
+                writer.Write(bNotAlwaysLoadedForEditorGame);
+
+            if (package.Header.IsVersionOrGreater(UE4Versions.VER_UE4_COOKED_ASSETS_IN_EDITOR_SUPPORT))
+                writer.Write(bIsAsset);
+
+            if (package.Header.IsVersionOrGreater(UE4Versions.VER_UE4_PRELOAD_DEPENDENCIES_IN_COOKED_EXPORTS))
+            {
+                writer.Write(FirstExportDependency);
+                writer.Write(SerializationBeforeSerializationDependencies);
+                writer.Write(CreateBeforeSerializationDependencies);
+                writer.Write(SerializationBeforeCreateDependencies);
+                writer.Write(CreateBeforeCreateDependencies);
+            }
         }
     }
 
@@ -607,7 +647,7 @@ namespace DQAsset
     {
         public PropertyGuid Guid;
         public PackageIndex Value;
-        public new void Deserialize(BinaryReader reader, PackageFile package)
+        public override void Deserialize(BinaryReader reader, PackageFile package)
         {
             Guid = new PropertyGuid();
             Guid.Deserialize(reader, package);
@@ -615,7 +655,7 @@ namespace DQAsset
             Value.Deserialize(reader, package);
         }
 
-        public new void Serialize(BinaryWriter writer, PackageFile package)
+        public override void Serialize(BinaryWriter writer, PackageFile package)
         {
             Guid.Serialize(writer, package);
             Value.Serialize(writer, package);
@@ -836,212 +876,30 @@ namespace DQAsset
         }
     }
 
-    public class PackageFileSummary : ISerializable
+    public class FEngineVersion : ISerializable
     {
-        public uint Tag;
-        public int LegacyFileVersion;
-        public int LegacyUE3Version;
-        public int FileVersionUE4;
-        public int FileVersionLicenseeUE4;
-        public int CustomVersionCount;
-        public List<int> CustomVersion;
-        public int TotalHeaderSize;
-        public string FolderName;
-        public uint PackageFlags;
-        public int NameCount;
-        public int NameOffset;
-        public string LocalizationId;
-        public int GatherableNameCount;
-        public int GatherableNameOffset;
-        public int ExportCount;
-        public int ExportOffset;
-        public int ImportCount;
-        public int ImportOffset;
-        public int DependsOffset;
-        public int SoftPackageReferencesCount;
-        public int SoftPackageReferencesOffset;
-        public int SearchableNamesOffset;
-        public int ThumbnailTableOffset;
-        public byte[] Guid;
-
-        public byte[] PersistentGuid;
-        public byte[] OwnerPersistentGuid;
-
-        public int GenerationCount;
-        public List<GenerationInfo> Generations;
-
-        public EngineVersion SavedByEngineVersion;
-        public EngineVersion CompatibleWithEngineVersion;
-
-        public int CompressedChunkCount;
-        public List<CompressedChunk> CompressedChunks;
-
-        public uint PackageSource;
-
-        public int AdditionalPackagesToCookCount;
-        public List<string> AdditionalPackagesToCook;
-
-        public int NumTextureAllocations;
-        public int AssetRegistryDataOffset;
-        public long BulkDataStartOffset;
-        public int WorldTileInfoDataOffset;
-
-        public int ChunkIdCount;
-        public List<int> ChunkIds;
-
-        public int PreloadDependencyCount;
-        public int PreloadDependencyOffset;
-
-        public void Serialize(BinaryWriter writer, PackageFile package)
-        {
-            writer.Write(Tag);
-            writer.Write(LegacyFileVersion);
-            writer.Write(LegacyUE3Version);
-            writer.Write(FileVersionUE4);
-            writer.Write(FileVersionLicenseeUE4);
-
-            CustomVersionCount = CustomVersion.Count;
-            writer.Write(CustomVersionCount);
-            foreach (var customVersion in CustomVersion)
-                writer.Write(customVersion);
-
-            writer.Write(TotalHeaderSize);
-            writer.WriteFString(FolderName);
-
-            writer.Write(PackageFlags);
-            writer.Write(NameCount);
-            writer.Write(NameOffset);
-
-            if (FileVersionUE4 >= 516)
-                writer.WriteFString(LocalizationId);
-
-            writer.Write(GatherableNameCount);
-            writer.Write(GatherableNameOffset);
-            writer.Write(ExportCount);
-            writer.Write(ExportOffset);
-            writer.Write(ImportCount);
-            writer.Write(ImportOffset);
-            writer.Write(DependsOffset);
-            writer.Write(SoftPackageReferencesCount);
-            writer.Write(SoftPackageReferencesOffset);
-            writer.Write(SearchableNamesOffset);
-            writer.Write(ThumbnailTableOffset);
-            writer.Write(Guid);
-            if (FileVersionUE4 >= 518)
-            {
-                writer.Write(PersistentGuid);
-                writer.Write(OwnerPersistentGuid);
-            }
-
-            GenerationCount = Generations.Count;
-            writer.Write(GenerationCount);
-            foreach (var gen in Generations)
-                writer.WriteStruct(gen);
-
-            writer.WriteStruct(SavedByEngineVersion);
-            writer.WriteStruct(CompatibleWithEngineVersion);
-
-            CompressedChunkCount = CompressedChunks.Count;
-            writer.Write(CompressedChunkCount);
-            foreach (var chunk in CompressedChunks)
-                writer.WriteStruct(chunk);
-
-            writer.Write(PackageSource);
-
-            AdditionalPackagesToCookCount = AdditionalPackagesToCook.Count;
-            writer.Write(AdditionalPackagesToCookCount);
-            foreach (var addtPkg in AdditionalPackagesToCook)
-                writer.WriteFString(addtPkg);
-
-            if (LegacyFileVersion > -7)
-                writer.Write(NumTextureAllocations);
-
-            writer.Write(AssetRegistryDataOffset);
-            writer.Write(BulkDataStartOffset);
-            writer.Write(WorldTileInfoDataOffset);
-
-            ChunkIdCount = ChunkIds.Count;
-            writer.Write(ChunkIdCount);
-            foreach (var chunk in ChunkIds)
-                writer.Write(chunk);
-
-            writer.Write(PreloadDependencyCount);
-            writer.Write(PreloadDependencyOffset);
-        }
+        public ushort Major;
+        public ushort Minor;
+        public ushort Patch;
+        public uint Changelist;
+        public string Branch;
 
         public void Deserialize(BinaryReader reader, PackageFile package)
         {
-            Tag = reader.ReadUInt32();
-            LegacyFileVersion = reader.ReadInt32();
-            LegacyUE3Version = reader.ReadInt32();
-            FileVersionUE4 = reader.ReadInt32();
-            FileVersionLicenseeUE4 = reader.ReadInt32();
+            Major = reader.ReadUInt16();
+            Minor = reader.ReadUInt16();
+            Patch = reader.ReadUInt16();
+            Changelist = reader.ReadUInt32();
+            Branch = reader.ReadFString();
+        }
 
-            CustomVersionCount = reader.ReadInt32();
-            CustomVersion = new List<int>();
-            for (int i = 0; i < CustomVersionCount; i++)
-                CustomVersion.Add(reader.ReadInt32());
-
-            TotalHeaderSize = reader.ReadInt32();
-            FolderName = reader.ReadFString();
-
-            PackageFlags = reader.ReadUInt32();
-            NameCount = reader.ReadInt32();
-            NameOffset = reader.ReadInt32();
-
-            if (FileVersionUE4 >= 516)
-                LocalizationId = reader.ReadFString();
-
-            GatherableNameCount = reader.ReadInt32();
-            GatherableNameOffset = reader.ReadInt32();
-            ExportCount = reader.ReadInt32();
-            ExportOffset = reader.ReadInt32();
-            ImportCount = reader.ReadInt32();
-            ImportOffset = reader.ReadInt32();
-            DependsOffset = reader.ReadInt32();
-            SoftPackageReferencesCount = reader.ReadInt32();
-            SoftPackageReferencesOffset = reader.ReadInt32();
-            SearchableNamesOffset = reader.ReadInt32();
-            ThumbnailTableOffset = reader.ReadInt32();
-            Guid = reader.ReadBytes(0x10);
-            if (FileVersionUE4 >= 518)
-            {
-                PersistentGuid = reader.ReadBytes(0x10);
-                OwnerPersistentGuid = reader.ReadBytes(0x10);
-            }
-
-            GenerationCount = reader.ReadInt32();
-            Generations = new List<GenerationInfo>();
-            for (int i = 0; i < GenerationCount; i++)
-                Generations.Add(reader.ReadStruct<GenerationInfo>());
-
-            SavedByEngineVersion = reader.ReadStruct<EngineVersion>();
-            CompatibleWithEngineVersion = reader.ReadStruct<EngineVersion>();
-
-            CompressedChunkCount = reader.ReadInt32();
-            CompressedChunks = new List<CompressedChunk>();
-            for (int i = 0; i < CompressedChunkCount; i++)
-                CompressedChunks.Add(reader.ReadStruct<CompressedChunk>());
-
-            PackageSource = reader.ReadUInt32();
-            AdditionalPackagesToCookCount = reader.ReadInt32();
-            AdditionalPackagesToCook = new List<string>();
-            for (int i = 0; i < AdditionalPackagesToCookCount; i++)
-                AdditionalPackagesToCook.Add(reader.ReadFString());
-
-            if (LegacyFileVersion > -7)
-                NumTextureAllocations = reader.ReadInt32();
-
-            AssetRegistryDataOffset = reader.ReadInt32();
-            BulkDataStartOffset = reader.ReadInt64();
-            WorldTileInfoDataOffset = reader.ReadInt32();
-            ChunkIdCount = reader.ReadInt32();
-            ChunkIds = new List<int>();
-            for (int i = 0; i < ChunkIdCount; i++)
-                ChunkIds.Add(reader.ReadInt32());
-
-            PreloadDependencyCount = reader.ReadInt32();
-            PreloadDependencyOffset = reader.ReadInt32();
+        public void Serialize(BinaryWriter writer, PackageFile package)
+        {
+            writer.Write(Major);
+            writer.Write(Minor);
+            writer.Write(Patch);
+            writer.Write(Changelist);
+            writer.WriteFString(Branch);
         }
     }
 }

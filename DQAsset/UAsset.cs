@@ -31,7 +31,8 @@ namespace DQAsset
 
         public void DeserializeText(string text)
         {
-            var lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            text = text.Replace("\r\n", "\n");
+            var lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
             foreach (var exp in ExportObjects)
             {
                 // Remove any TextHeader lines from the input text
@@ -45,7 +46,7 @@ namespace DQAsset
                         skipFirstLine = false;
                         continue; // skip csv header
                     }
-                    newText += line + Environment.NewLine;
+                    newText += line + "\n";
                 }
                 exp.DeserializeText(newText, this);
             }
@@ -57,7 +58,7 @@ namespace DQAsset
             foreach (var exp in ExportObjects)
             {
                 retVal += exp.SerializeTextHeader(this);
-                retVal += Environment.NewLine;
+                retVal += "\n";
                 retVal += exp.SerializeText(this, true);
             }
             return retVal;
@@ -678,18 +679,17 @@ namespace DQAsset
         }
         public string SerializeText(PackageFile package, bool isMainElement)
         {
-            var retVal = "";
-
             // TODO: add a CSV header line from the type in PropertiesData?
 
+            string[] lines = new string[PropertiesData.Count];
+            int i = 0;
             foreach (var kvp in PropertiesData)
             {
-                retVal += kvp.Key.ToString() + ",";
-                retVal += kvp.Value.SerializeText(package, isMainElement);
-                retVal += Environment.NewLine;
+                lines[i] = $"{kvp.Key},{kvp.Value.SerializeText(package, isMainElement)}";
+                i++;
             }
 
-            return retVal;
+            return String.Join('\n', lines);
         }
 
         public void DeserializeText(string text, PackageFile package)
@@ -711,7 +711,9 @@ namespace DQAsset
             if (rowType == null)
                 throw new Exception("Failed to find rowType type!");
 
-            var lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            text = text.Replace("\r\n", "\n");
+
+            var lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
             foreach (var line in lines)
             {
                 // Read + remove RowName from the line

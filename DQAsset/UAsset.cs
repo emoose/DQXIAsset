@@ -31,24 +31,19 @@ namespace DQAsset
 
         public void DeserializeText(string text)
         {
+
+            //var lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
             text = text.Replace("\r\n", "\n");
-            var lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            var firstLineEnd = text.IndexOf('\n');
+            text = text.Substring(firstLineEnd + 1);
+
             foreach (var exp in ExportObjects)
             {
                 // Remove any TextHeader lines from the input text
-                var textHeader = exp.SerializeTextHeader(this);
-                var newText = "";
-                bool skipFirstLine = true;
-                foreach (var line in lines)
-                {
-                    if (line == textHeader || skipFirstLine)
-                    {
-                        skipFirstLine = false;
-                        continue; // skip csv header
-                    }
-                    newText += line + "\n";
-                }
-                exp.DeserializeText(newText, this);
+                // TODO: check against SerializeTextHeader value?
+
+                exp.DeserializeText(text, this);
             }
         }
 

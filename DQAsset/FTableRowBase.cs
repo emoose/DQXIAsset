@@ -94,7 +94,7 @@ namespace DQAsset
                     var str = (string)value;
                     if (string.IsNullOrEmpty(str))
                         return "\"\""; // hack to fix CSV regex not working properly with empty cells..
-                    return str.Replace("\r", "\\\\r").Replace("\n", "\\\\n");
+                    return "\"" + str.Replace("\r", "\\\\r").Replace("\n", "\\\\n").Replace("\"", "\"\"") + "\"";
                 case "Byte[]":
                     var byt = (byte[])value;
                     return byt.ToHexString();

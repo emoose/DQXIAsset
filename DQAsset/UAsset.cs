@@ -114,16 +114,21 @@ namespace DQAsset
                     throw new Exception("Failed to fully deserialize UAsset");
         }
 
+        bool isSecondPass = false;
+
         public void Serialize(BinaryWriter uexp, BinaryWriter uasset, bool doFnameCleanup)
         {
             // Set flag to make FName::Serialize add itself to a list
             // This way we can update all FNames later without needing to do another whole serialization pass
             FNameCleanupInProgress = doFnameCleanup;
             if (doFnameCleanup)
+            {
+                isSecondPass = false;
                 UExpFnames = new List<Tuple<FName, long>>();
+            }
 
             // Write out export data first
-            if (uexp != null)
+            if (uexp != null && !isSecondPass)
             {
                 var uexpPosition = uexp.BaseStream.Position;
 
@@ -221,14 +226,16 @@ namespace DQAsset
 
             // Update export objects with proper SerialOffset
             // TODO: figure out why this wasn't needed previously!
-            uasset.BaseStream.Position = headerPosition + Header.ExportOffset;
-            foreach (var exp in Exports)
+            if (!doFnameCleanup) // only update them on second pass - FName cleanup might resize uasset
             {
-                exp.SerialOffset += Header.TotalHeaderSize;
-                exp.Serialize(uasset, this);
+                uasset.BaseStream.Position = headerPosition + Header.ExportOffset;
+                foreach (var exp in Exports)
+                {
+                    exp.SerialOffset += Header.TotalHeaderSize;
+                    exp.Serialize(uasset, this);
+                }
             }
-
-            if (doFnameCleanup)
+            else
             {
                 var notInUseFNameIndexes = new List<int>();
 
@@ -281,7 +288,9 @@ namespace DQAsset
                 // Need to do second header serialization pass so that updated Names array/indexes are written
                 uasset.BaseStream.Position = headerPosition;
                 uasset.BaseStream.SetLength(0);
+                isSecondPass = true;
                 Serialize(null, uasset, false);
+                isSecondPass = false;
             }
         }
     }

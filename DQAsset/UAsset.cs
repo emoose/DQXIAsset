@@ -226,16 +226,14 @@ namespace DQAsset
 
             // Update export objects with proper SerialOffset
             // TODO: figure out why this wasn't needed previously!
-            if (!doFnameCleanup) // only update them on second pass - FName cleanup might resize uasset
+            uasset.BaseStream.Position = headerPosition + Header.ExportOffset;
+            foreach (var exp in Exports)
             {
-                uasset.BaseStream.Position = headerPosition + Header.ExportOffset;
-                foreach (var exp in Exports)
-                {
-                    exp.SerialOffset += Header.TotalHeaderSize;
-                    exp.Serialize(uasset, this);
-                }
+                exp.SerialOffset += Header.TotalHeaderSize;
+                exp.Serialize(uasset, this);
             }
-            else
+
+            if (doFnameCleanup)
             {
                 var notInUseFNameIndexes = new List<int>();
 
@@ -283,6 +281,12 @@ namespace DQAsset
                 {
                     uexp.BaseStream.Position = name.Item2;
                     name.Item1.Serialize(uexp, this);
+                }
+
+                // Remove uasset header size from Exports SerialOffset (second pass will add the updated header size)
+                foreach (var exp in Exports)
+                {
+                    exp.SerialOffset -= Header.TotalHeaderSize;
                 }
 
                 // Need to do second header serialization pass so that updated Names array/indexes are written

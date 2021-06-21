@@ -8,7 +8,7 @@ DQXIS datatables are kinda unique from other UE4 games datatables, instead of ea
 Fortunately for us the format of these StructProperties is stored inside the EXE (as can be seen in [DQXIS-SDK](https://github.com/emoose/DQXIS-SDK)), though the format defined in the EXE doesn't always seem to match up with the actual row data, oftentimes having certain fields moved around/reordered, and padding fields added/removed.
 
 There are a couple datatables in DQXIS that do use the normal UE4 datatable format though, these seem to be denoted by a "UDS" prefix ('user-defined struct').  
-I've tried adding some support for these in here but it's not that great since I didn't design for that kind of table, you'd probably have better luck editing those with [kaihelios's Uasset Viewer tool](https://github.com/kaiheilos/Utilities).
+I've tried adding some support for these in here but it's not that great since I didn't design for that kind of table, you'd probably have better luck editing those with [kaiheilos's Uasset Viewer tool](https://github.com/kaiheilos/Utilities).
 
 ---
 

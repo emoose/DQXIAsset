@@ -1,5 +1,5 @@
 # DQXIAsset
-UAsset to CSV converter for DQXI/UE4 DataTables, supporting almost all DQXI table structs.
+UAsset <-> CSV converter for DQXIS/UE4 DataTables, supporting almost all DQXIS table structs.
 
 The UE4 package reading code here is pretty tightly coupled with the packages used by DQXIS, and not likely to work well with any other UE4 titles (unless they happened to be based on DQXIS's UE4 branch or something)
 
